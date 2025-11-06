@@ -13,9 +13,33 @@ const PORT = process.env.PORT || 3001;
 // Trust proxy for proper client IP detection
 app.set('trust proxy', 1);
 
-// Middleware
+// Middleware - Dynamic CORS configuration
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5174',
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:5174',
+      'https://trustiqueassist21.netlify.app',
+      'https://*.netlify.app'
+    ];
+    
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    // Check if origin matches any allowed pattern
+    const isAllowed = allowedOrigins.some(allowedOrigin => {
+      if (allowedOrigin.includes('*')) {
+        const pattern = allowedOrigin.replace('*', '.*');
+        return new RegExp(pattern).test(origin);
+      }
+      return allowedOrigin === origin;
+    });
+    
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());

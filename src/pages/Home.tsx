@@ -77,7 +77,8 @@ export default function Home() {
 
   const fetchTestimonials = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/testimonials');
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://trustique-assist.onrender.com';
+      const response = await fetch(`${apiUrl}/api/testimonials`);
       if (!response.ok) {
         throw new Error('Failed to fetch testimonials');
       }
