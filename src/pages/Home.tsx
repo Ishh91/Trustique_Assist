@@ -35,7 +35,7 @@ const AnimatedSection = ({ children, className = "", delay = 0 }) => {
       initial={{ opacity: 0, y: 80 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
-      viewport={{ once: true, threshold: 0.1 }}
+      viewport={{ once: true }}
       className={className}
     >
       {children}
@@ -88,7 +88,7 @@ export default function Home() {
 
   // Remove background selector in production - for demo only
   useEffect(() => {
-    const handleKeyPress = (e) => {
+    const handleKeyPress = (e: { ctrlKey: any; key: string; }) => {
       if (e.ctrlKey && e.key === 'b') {
         const backgrounds = ['particles', 'gradient', 'shapes', 'waves', 'hexagons', 'combined'];
         const currentIndex = backgrounds.indexOf(currentBackground);
@@ -146,7 +146,7 @@ export default function Home() {
               variants={staggerContainer}
               initial="initial"
               whileInView="animate"
-              viewport={{ once: true, threshold: 0.1 }}
+              viewport={{ once: true }}
             >
               {technologies.map((tech, index) => {
                 const Icon = tech.icon;
