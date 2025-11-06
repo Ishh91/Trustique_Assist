@@ -10,6 +10,7 @@ import Blog from './pages/Blog';
 import BlogDetail from './pages/BlogDetail';
 import BackgroundFX from './components/BackgroundFX';
 import Careers from './pages/Careers';
+import BlogAdmin from './pages/BlogAdmin';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogDetail />} />
+        <Route path="/blog-admin" element={<BlogAdmin />} />
         <Route path="/careers" element={<Careers />} />
       </Routes>
       <Footer />

@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Michael Chen",
+    "role": "CTO",
+    "company": "DataFlow Systems",
+    "review": "Outstanding AI integration and machine learning solutions. The team delivered a sophisticated recommendation engine that increased our user engagement by 60%.",
+    "project": "AI Recommendation System",
+    "rating": 5,
+    "featuredImage": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3",
+    "isActive": true
+  },
+  {
+    "name": "Emily Rodriguez",
+    "role": "Product Manager",
+    "company": "InnovateTech",
+    "review": "The intelligent automation solutions transformed our workflow completely. Their attention to detail and AI expertise is remarkable.",
+    "project": "Intelligent Automation Platform",
+    "rating": 5,
+    "featuredImage": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3",
+    "isActive": true
+  }
+]

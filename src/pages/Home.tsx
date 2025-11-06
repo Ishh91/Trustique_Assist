@@ -1,11 +1,26 @@
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, CheckCircle, Code, Smartphone, Globe, Database, Cloud, Zap, Users, TrendingUp, Award, Star, Bot, Brain, Cpu, Shield, Sparkles } from 'lucide-react';
 import Hero from '../components/Hero';
 import { services } from '../data/services';
-import { Link } from 'react-router-dom';
-import { Code, Shield, Cloud, Database, Smartphone, Globe, Users, Zap, CheckCircle, ArrowRight } from 'lucide-react';
 // @ts-ignore
 import { AnimatedBackground } from '../components/AnimatedBackground';
+
+// Testimonial interface
+interface Testimonial {
+  id: string;
+  name: string;
+  role: string;
+  company: string;
+  review: string;
+  project: string;
+  rating: number;
+  featuredImage?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
 
 // Animation variants
 const fadeInUp = {
@@ -29,7 +44,13 @@ const scaleIn = {
 };
 
 // Reusable animated section component
-const AnimatedSection = ({ children, className = "", delay = 0 }) => {
+interface AnimatedSectionProps {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+}
+
+const AnimatedSection: React.FC<AnimatedSectionProps> = ({ children, className = "", delay = 0 }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 80 }}
@@ -45,15 +66,42 @@ const AnimatedSection = ({ children, className = "", delay = 0 }) => {
 
 export default function Home() {
   const [currentBackground, setCurrentBackground] = useState('combined');
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const featured = services.slice(0, 6);
 
+  useEffect(() => {
+    fetchTestimonials();
+  }, []);
+
+  const fetchTestimonials = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/testimonials');
+      if (!response.ok) {
+        throw new Error('Failed to fetch testimonials');
+      }
+      const data = await response.json();
+      setTestimonials(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error('Error fetching testimonials:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const technologies = [
+    { name: 'AI & Machine Learning', icon: Brain },
     { name: 'React & Next.js', icon: Code },
     { name: 'Node.js & Python', icon: Cloud },
     { name: 'AWS & Azure', icon: Database },
     { name: 'Mobile Apps', icon: Smartphone },
     { name: 'Cybersecurity', icon: Shield },
-    { name: 'Global Scale', icon: Globe }
+    { name: 'Global Scale', icon: Globe },
+    { name: 'AI Automation', icon: Bot },
+    { name: 'Cloud Computing', icon: Cpu },
+    { name: 'Smart Solutions', icon: Sparkles }
   ];
 
   const processSteps = [
@@ -128,7 +176,7 @@ export default function Home() {
                 transition={{ duration: 0.6 }}
                 viewport={{ once: true }}
               >
-                Tech <span className="text-gradient">Stack</span>
+                <span className="text-gradient">Tech Stack</span> 
               </motion.h2>
               <motion.p 
                 className="text-lg text-gray-600"
@@ -137,12 +185,12 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.1 }}
                 viewport={{ once: true }}
               >
-                Modern technologies we excel in
+                Cutting-edge technologies enhanced with artificial intelligence
               </motion.p>
             </div>
             
             <motion.div 
-              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8"
+              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6"
               variants={staggerContainer}
               initial="initial"
               whileInView="animate"
@@ -154,20 +202,34 @@ export default function Home() {
                   <motion.div
                     key={tech.name}
                     variants={scaleIn}
-                    className="group text-center p-6 bg-white/90 backdrop-blur-sm rounded-xl border border-white/20 shadow-lg hover:shadow-2xl transition-all duration-300"
+                    className="group text-center p-6 bg-white/90 backdrop-blur-sm rounded-xl border border-white/20 shadow-lg hover:shadow-2xl transition-all duration-300 relative overflow-hidden"
                     whileHover={{ 
                       y: -8,
                       scale: 1.02,
                     }}
                   >
+                    {/* Dynamic hover background */}
                     <motion.div 
-                      className="inline-flex p-3 rounded-lg brand-gradient-bg mb-4"
-                      whileHover={{ scale: 1.1, rotate: 5 }}
-                      transition={{ type: "spring", stiffness: 300 }}
-                    >
-                      <Icon className="text-white" size={24} />
-                    </motion.div>
-                    <h3 className="font-semibold text-gray-900 text-sm">{tech.name}</h3>
+                      className="absolute inset-0 bg-gradient-to-br from-blue-50 to-green-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      initial={{ opacity: 0 }}
+                      whileHover={{ opacity: 1 }}
+                    />
+                    <motion.div 
+                      className="absolute inset-0 bg-gradient-to-tr from-[#0056D2]/10 to-[#00FF88]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                      initial={{ opacity: 0 }}
+                      whileHover={{ opacity: 1 }}
+                    />
+                    
+                    <div className="relative z-10">
+                      <motion.div 
+                        className="inline-flex p-3 rounded-lg brand-gradient-bg mb-4"
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                      >
+                        <Icon className="text-white" size={24} />
+                      </motion.div>
+                      <h3 className="font-semibold text-gray-900 text-sm leading-tight group-hover:text-[#0056D2] transition-colors duration-300">{tech.name}</h3>
+                    </div>
                   </motion.div>
                 );
               })}
@@ -186,7 +248,7 @@ export default function Home() {
                 transition={{ duration: 0.6 }}
                 viewport={{ once: true }}
               >
-                Our <span className="text-gradient">Process</span>
+                 <span className="text-gradient">Our</span> Process
               </motion.h2>
               <motion.p
                 className="text-lg text-gray-600"
@@ -195,7 +257,7 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.1 }}
                 viewport={{ once: true }}
               >
-                Agile methodology for delivering quality software
+                Intelligent methodology for delivering superior software solutions
               </motion.p>
             </div>
             <motion.div 
@@ -203,38 +265,66 @@ export default function Home() {
               variants={staggerContainer}
               initial="initial"
               whileInView="animate"
-              viewport={{ once: true, threshold: 0.1 }}
+              viewport={{ once: true }}
             >
               {processSteps.map((step, index) => (
                 <motion.div
                   key={step.step}
                   variants={fadeInUp}
-                  className="group relative text-center p-8 bg-white/90 backdrop-blur-sm rounded-2xl border border-white/20 shadow-lg hover:shadow-2xl transition-all duration-300"
+                  className="group relative text-center p-8 bg-white/90 backdrop-blur-sm rounded-2xl border border-white/20 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
                   whileHover={{ 
                     y: -8,
                     transition: { duration: 0.3 }
                   }}
                 >
+                  {/* Dynamic hover background */}
                   <motion.div 
-                    className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 brand-gradient-bg rounded-full flex items-center justify-center text-white font-bold text-sm"
-                    whileHover={{ scale: 1.2, rotate: 360 }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    {step.step}
-                  </motion.div>
-                  <div className="mb-4">
-                    <motion.div
-                      whileHover={{ scale: 1.1, rotate: 5 }}
-                      transition={{ type: "spring", stiffness: 300 }}
+                    className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-green-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    initial={{ opacity: 0 }}
+                    whileHover={{ opacity: 1 }}
+                  />
+                  <motion.div 
+                    className="absolute inset-0 bg-gradient-to-tr from-[#0056D2]/5 via-transparent to-[#00FF88]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    initial={{ opacity: 0 }}
+                    whileHover={{ opacity: 1 }}
+                  />
+                  
+                  {/* Floating particles effect */}
+                  <motion.div 
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    whileHover={{
+                      background: [
+                        "radial-gradient(circle at 20% 20%, rgba(0, 86, 210, 0.1) 0%, transparent 50%)",
+                        "radial-gradient(circle at 80% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%)",
+                        "radial-gradient(circle at 40% 60%, rgba(0, 86, 210, 0.1) 0%, transparent 50%)"
+                      ],
+                      transition: { duration: 2, repeat: Infinity }
+                    }}
+                  />
+                  
+                  <div className="relative z-10">
+                    <motion.div 
+                      className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 brand-gradient-bg rounded-full flex items-center justify-center text-white font-bold text-sm"
+                      whileHover={{ scale: 1.2, rotate: 360 }}
+                      transition={{ duration: 0.5 }}
                     >
-                      <Zap className="w-12 h-12 text-[#0056D2] mx-auto" />
+                      {step.step}
                     </motion.div>
+                    <div className="mb-4">
+                      <motion.div
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                      >
+                        <Zap className="w-12 h-12 text-[#0056D2] mx-auto group-hover:text-[#00FF88] transition-colors duration-300" />
+                      </motion.div>
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-[#0056D2] transition-colors duration-300">{step.title}</h3>
+                    <p className="text-gray-600 leading-relaxed group-hover:text-gray-800 transition-colors duration-300">{step.description}</p>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">{step.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{step.description}</p>
                 </motion.div>
               ))}
-            </motion.div>
+              </motion.div>
+            
           </div>
         </AnimatedSection>
 
@@ -283,7 +373,7 @@ export default function Home() {
         </motion.section>
 
         {/* Featured Services */}
-        <AnimatedSection className="py-24 bg-white/80 backdrop-blur-sm" id="featured-services" delay={0.2}>
+        <AnimatedSection className="py-24 bg-white/80 backdrop-blur-sm" delay={0.2}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <motion.h2
@@ -293,7 +383,7 @@ export default function Home() {
                 transition={{ duration: 0.6 }}
                 viewport={{ once: true }}
               >
-                Our <span className="text-gradient">Solutions</span>
+                <span className="text-gradient">Our</span> Services
               </motion.h2>
               <motion.p
                 className="text-lg text-gray-600"
@@ -302,7 +392,7 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.1 }}
                 viewport={{ once: true }}
               >
-                Custom software solutions for your business needs
+                Intelligent software solutions powered by cutting-edge AI technology
               </motion.p>
             </div>
             <motion.div 
@@ -310,7 +400,7 @@ export default function Home() {
               variants={staggerContainer}
               initial="initial"
               whileInView="animate"
-              viewport={{ once: true, threshold: 0.1 }}
+              viewport={{ once: true }}
             >
               {featured.map((service, index) => {
                 const Icon = service.icon;
@@ -325,13 +415,36 @@ export default function Home() {
                   >
                     <Link
                       to={`/services/${service.slug}`}
-                      className="group relative bg-white/90 backdrop-blur-sm p-8 rounded-2xl border border-white/20 shadow-lg hover:shadow-2xl transition-all duration-300 block"
+                      className="group relative bg-white/90 backdrop-blur-sm p-8 rounded-2xl border border-white/20 shadow-lg hover:shadow-2xl transition-all duration-300 block overflow-hidden"
                     >
+                      {/* Dynamic hover backgrounds */}
+                      <motion.div 
+                        className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-green-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        initial={{ opacity: 0 }}
+                        whileHover={{ opacity: 1 }}
+                      />
+                      <motion.div 
+                        className="absolute inset-0 bg-gradient-to-tr from-[#0056D2]/10 via-transparent to-[#00FF88]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                        initial={{ opacity: 0 }}
+                        whileHover={{ opacity: 1 }}
+                      />
                       <motion.div 
                         className="absolute inset-0 brand-gradient-soft rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                         whileHover={{ opacity: 1 }}
                       />
-                      <div className="relative">
+                      
+                      {/* AI circuit pattern overlay */}
+                      <motion.div 
+                        className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
+                        style={{
+                          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230056D2' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                          backgroundSize: '30px 30px'
+                        }}
+                        initial={{ opacity: 0 }}
+                        whileHover={{ opacity: 0.2 }}
+                      />
+                      
+                      <div className="relative z-10">
                         <motion.div 
                           className={`inline-flex p-4 rounded-xl brand-gradient-bg mb-6`}
                           whileHover={{ scale: 1.1, rotate: 5 }}
@@ -339,10 +452,10 @@ export default function Home() {
                         >
                           <Icon className="text-white" size={28} />
                         </motion.div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-4">{service.title}</h3>
-                        <p className="text-gray-600 leading-relaxed">{service.description}</p>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-[#0056D2] transition-colors duration-300">{service.title}</h3>
+                        <p className="text-gray-600 leading-relaxed group-hover:text-gray-800 transition-colors duration-300">{service.description}</p>
                         <motion.div 
-                          className="mt-4 flex items-center text-[#0056D2] font-medium"
+                          className="mt-4 flex items-center text-[#0056D2] font-medium group-hover:text-[#00FF88] transition-colors duration-300"
                           whileHover={{ x: 5 }}
                           transition={{ duration: 0.2 }}
                         >
@@ -385,10 +498,10 @@ export default function Home() {
                 viewport={{ once: true }}
               >
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-                  Why Choose <span className="text-gradient">Our Team</span>
+                  Why Choose <span className="text-gradient">Our AI Team</span>
                 </h2>
                 <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                  We are a team of passionate developers, designers, and strategists dedicated to delivering exceptional software solutions that drive business growth.
+                  We are a team of passionate developers, AI specialists, designers, and strategists dedicated to delivering intelligent software solutions that drive business growth and innovation.
                 </p>
                 <motion.div 
                   className="space-y-4"
@@ -398,12 +511,12 @@ export default function Home() {
                   viewport={{ once: true }}
                 >
                   {[
-                    'Expert developers with 5+ years experience',
+                    'AI experts with 5+ years experience',
+                    'Machine learning integration',
                     'Agile development methodology',
-                    'Continuous integration & deployment',
                     '24/7 technical support',
-                    'Scalable and maintainable code',
-                    'Security-first approach'
+                    'Scalable and intelligent code',
+                    'Security-first AI approach'
                   ].map((feature, index) => (
                     <motion.div
                       key={feature}
@@ -449,7 +562,7 @@ export default function Home() {
         </AnimatedSection>
 
         {/* Testimonials */}
-        <AnimatedSection id="testimonials" className="py-24 bg-white/80 backdrop-blur-sm" delay={0.4}>
+        <AnimatedSection className="py-24 bg-white/80 backdrop-blur-sm" delay={0.4}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <motion.h2
@@ -459,7 +572,7 @@ export default function Home() {
                 transition={{ duration: 0.6 }}
                 viewport={{ once: true }}
               >
-                Client <span className="text-gradient">Reviews</span>
+                Client <span className="text-gradient">Success Stories</span>
               </motion.h2>
               <motion.p
                 className="text-lg text-gray-600"
@@ -468,77 +581,93 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.1 }}
                 viewport={{ once: true }}
               >
-                What our clients say about working with us
+                Real feedback from our satisfied clients
               </motion.p>
             </div>
-            <motion.div 
-              className="grid grid-cols-1 md:grid-cols-3 gap-8"
-              variants={staggerContainer}
-              initial="initial"
-              whileInView="animate"
-              viewport={{ once: true, threshold: 0.1 }}
-            >
-              {[
-                {
-                  name: "Alex Johnson",
-                  role: "CTO, FinTech Group",
-                  review: "Trustique delivered an exceptional ERP system that streamlined our operations. Their technical expertise and attention to detail were impressive.",
-                },
-                {
-                  name: "Sarah Chen",
-                  role: "Product Manager, TechStart",
-                  review: "The mobile app they developed exceeded our expectations. Great communication throughout the project and delivered ahead of schedule.",
-                },
-                {
-                  name: "Mike Rodriguez",
-                  role: "CEO, RetailChain",
-                  review: "Outstanding web development services. They understood our business needs and delivered a scalable e-commerce platform that boosted our sales.",
-                }
-              ].map((testimonial, i) => (
-                <motion.div
-                  key={i}
-                  variants={fadeInUp}
-                  className="group relative bg-white/90 backdrop-blur-sm p-8 rounded-2xl border border-white/20 shadow-lg hover:shadow-2xl transition-all duration-300"
-                  whileHover={{ 
-                    y: -8,
-                    transition: { duration: 0.3 }
-                  }}
+            
+            {loading && (
+              <div className="text-center py-12">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#0056D2]"></div>
+                <p className="mt-4 text-gray-600">Loading testimonials...</p>
+              </div>
+            )}
+            
+            {error && (
+              <div className="text-center py-12">
+                <p className="text-red-600 mb-4">Error loading testimonials: {error}</p>
+                <button 
+                  onClick={fetchTestimonials}
+                  className="px-4 py-2 bg-[#0056D2] text-white rounded-lg hover:bg-[#0044A8] transition-colors"
                 >
-                  <div className="absolute inset-0 brand-gradient-soft rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="relative">
-                    <div className="flex gap-1 mb-4">
-                      {[...Array(5)].map((_, i) => (
-                        <motion.span
-                          key={i}
-                          className="text-[#00FF88] text-lg"
-                          initial={{ scale: 0 }}
-                          whileInView={{ scale: 1 }}
-                          transition={{ delay: i * 0.1 + 0.2 }}
-                          viewport={{ once: true }}
-                        >
-                          ★
-                        </motion.span>
-                      ))}
-                    </div>
-                    <p className="text-gray-700 leading-relaxed mb-6">
-                      "{testimonial.review}"
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                        <div className="text-sm text-gray-600">{testimonial.role}</div>
+                  Retry
+                </button>
+              </div>
+            )}
+            
+            {!loading && !error && testimonials.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-gray-600">No testimonials available yet.</p>
+              </div>
+            )}
+            
+            {!loading && !error && testimonials.length > 0 && (
+              <motion.div 
+                className="grid grid-cols-1 md:grid-cols-3 gap-8"
+                variants={staggerContainer}
+                initial="initial"
+                whileInView="animate"
+                viewport={{ once: true }}
+              >
+                {testimonials.map((testimonial, i) => (
+                <motion.div
+                    key={testimonial.id}
+                    variants={fadeInUp}
+                    className="group relative bg-white/90 backdrop-blur-sm p-8 rounded-2xl border border-white/20 shadow-lg hover:shadow-2xl transition-all duration-300"
+                    whileHover={{ 
+                      y: -8,
+                      transition: { duration: 0.3 }
+                    }}
+                  >
+                    <div className="absolute inset-0 brand-gradient-soft rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="relative">
+                      <div className="flex gap-1 mb-4">
+                        {[...Array(testimonial.rating || 5)].map((_, starIndex) => (
+                          <motion.span
+                            key={starIndex}
+                            className="text-[#00FF88] text-lg"
+                            initial={{ scale: 0 }}
+                            whileInView={{ scale: 1 }}
+                            transition={{ delay: starIndex * 0.1 + 0.2 }}
+                            viewport={{ once: true }}
+                          >
+                            ★
+                          </motion.span>
+                        ))}
                       </div>
-                      <motion.div 
-                        className="px-3 py-1 rounded-full bg-gray-100 text-[#0056D2] text-xs font-medium"
-                        whileHover={{ scale: 1.05 }}
-                      >
-                        Verified
-                      </motion.div>
+                      <p className="text-gray-700 leading-relaxed mb-6 italic">
+                        "{testimonial.review}"
+                      </p>
+                      <div className="mb-4">
+                        <div className="text-sm text-gray-500 font-medium">Project:</div>
+                        <div className="text-[#0056D2] font-semibold">{testimonial.project}</div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="font-semibold text-gray-900">{testimonial.name}</div>
+                          <div className="text-sm text-gray-600">{testimonial.role}, {testimonial.company}</div>
+                        </div>
+                        <motion.div 
+                          className="px-3 py-1 rounded-full bg-gray-100 text-[#0056D2] text-xs font-medium"
+                          whileHover={{ scale: 1.05 }}
+                        >
+                          Verified Client
+                        </motion.div>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
+                  </motion.div>
               ))}
             </motion.div>
+            )}
           </div>
         </AnimatedSection>
 
@@ -558,7 +687,7 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              Ready to Build Your Next Project?
+              Ready to Build Your Next AI Project?
             </motion.h2>
             <motion.p
               className="text-xl text-blue-100 mb-8"
@@ -570,7 +699,7 @@ export default function Home() {
               Let's discuss your software development needs and create something amazing together.
             </motion.p>
             <motion.div 
-              className="flex flex-col sm:flex-row gap-4 justify-center"
+              className="flex flex-wrap gap-4 justify-center"
               variants={staggerContainer}
               initial="initial"
               whileInView="animate"
@@ -593,7 +722,7 @@ export default function Home() {
               <motion.div variants={fadeInUp}>
                 <Link 
                   to="/services" 
-                  className="border-2 border-white text-white px-8 py-4 rounded-full hover:bg-white hover:text-[#0056D2] transition-all duration-300 font-semibold"
+                  className="bg-white text-[#0056D2] px-8 py-4 rounded-full hover:shadow-2xl transition-all duration-300 font-semibold flex items-center gap-2 justify-center shadow-lg"
                 >
                   <motion.span
                     whileHover={{ scale: 1.05 }}
@@ -601,6 +730,7 @@ export default function Home() {
                   >
                     View Our Work
                   </motion.span>
+                  <ArrowRight size={20} />
                 </Link>
               </motion.div>
             </motion.div>

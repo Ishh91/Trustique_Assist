@@ -8,7 +8,10 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit -p tsconfig.app.json"
+    "typecheck": "tsc --noEmit -p tsconfig.app.json",
+    "server": "node server.js",
+    "server:dev": "nodemon server.js",
+    "start": "node server.js"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",
@@ -25,6 +28,7 @@
     "react-dom": "^18.3.1",
     "react-intersection-observer": "^10.0.0",
     "react-router-dom": "^7.9.4",
+    "sqlite3": "^5.1.7",
     "ts-node": "^10.9.2"
   },
   "devDependencies": {

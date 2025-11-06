@@ -71,8 +71,8 @@ export default function Navbar() {
 
   // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    const handleClickOutside = (event: { target: any; }) => {
+      if (dropdownRef.current && !(dropdownRef.current as any).contains(event.target)) {
         setIsServicesDropdownOpen(false);
       }
     };
@@ -223,7 +223,6 @@ export default function Navbar() {
             >
               Blog
             </Link>
-
             <Link
               to="/careers"
               className="text-gray-700 hover:text-[#0056D2] transition-colors duration-200 font-medium"
