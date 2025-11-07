@@ -77,8 +77,8 @@ export default function Home() {
 
   const fetchTestimonials = async () => {
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'https://trustique-assist.onrender.com';
-      const response = await fetch(`${apiUrl}/api/testimonials`);
+      const apiBase = import.meta.env.PROD ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:3001');
+      const response = await fetch(`${apiBase}/testimonials`);
       if (!response.ok) {
         throw new Error('Failed to fetch testimonials');
       }
@@ -562,115 +562,117 @@ export default function Home() {
           </div>
         </AnimatedSection>
 
-        {/* Testimonials */}
-        <AnimatedSection className="py-24 bg-white/80 backdrop-blur-sm" delay={0.4}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <motion.h2
-                className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                viewport={{ once: true }}
-              >
-                Client <span className="text-gradient">Success Stories</span>
-              </motion.h2>
-              <motion.p
-                className="text-lg text-gray-600"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                viewport={{ once: true }}
-              >
-                Real feedback from our satisfied clients
-              </motion.p>
-            </div>
-            
-            {loading && (
-              <div className="text-center py-12">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#0056D2]"></div>
-                <p className="mt-4 text-gray-600">Loading testimonials...</p>
-              </div>
-            )}
-            
-            {error && (
-              <div className="text-center py-12">
-                <p className="text-red-600 mb-4">Error loading testimonials: {error}</p>
-                <button 
-                  onClick={fetchTestimonials}
-                  className="px-4 py-2 bg-[#0056D2] text-white rounded-lg hover:bg-[#0044A8] transition-colors"
+        {/* Testimonials Section with id="testimonials" */}
+        <section id="testimonials">
+          <AnimatedSection className="py-24 bg-white/80 backdrop-blur-sm" delay={0.4}>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center mb-12">
+                <motion.h2
+                  className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                  viewport={{ once: true }}
                 >
-                  Retry
-                </button>
+                  Client <span className="text-gradient">Success Stories</span>
+                </motion.h2>
+                <motion.p
+                  className="text-lg text-gray-600"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.1 }}
+                  viewport={{ once: true }}
+                >
+                  Real feedback from our satisfied clients
+                </motion.p>
               </div>
-            )}
-            
-            {!loading && !error && testimonials.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-gray-600">No testimonials available yet.</p>
-              </div>
-            )}
-            
-            {!loading && !error && testimonials.length > 0 && (
-              <motion.div 
-                className="grid grid-cols-1 md:grid-cols-3 gap-8"
-                variants={staggerContainer}
-                initial="initial"
-                whileInView="animate"
-                viewport={{ once: true }}
-              >
-                {testimonials.map((testimonial, i) => (
-                <motion.div
-                    key={testimonial.id}
-                    variants={fadeInUp}
-                    className="group relative bg-white/90 backdrop-blur-sm p-8 rounded-2xl border border-white/20 shadow-lg hover:shadow-2xl transition-all duration-300"
-                    whileHover={{ 
-                      y: -8,
-                      transition: { duration: 0.3 }
-                    }}
+              
+              {loading && (
+                <div className="text-center py-12">
+                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#0056D2]"></div>
+                  <p className="mt-4 text-gray-600">Loading testimonials...</p>
+                </div>
+              )}
+              
+              {error && (
+                <div className="text-center py-12">
+                  <p className="text-red-600 mb-4">Error loading testimonials: {error}</p>
+                  <button 
+                    onClick={fetchTestimonials}
+                    className="px-4 py-2 bg-[#0056D2] text-white rounded-lg hover:bg-[#0044A8] transition-colors"
                   >
-                    <div className="absolute inset-0 brand-gradient-soft rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <div className="relative">
-                      <div className="flex gap-1 mb-4">
-                        {[...Array(testimonial.rating || 5)].map((_, starIndex) => (
-                          <motion.span
-                            key={starIndex}
-                            className="text-[#00FF88] text-lg"
-                            initial={{ scale: 0 }}
-                            whileInView={{ scale: 1 }}
-                            transition={{ delay: starIndex * 0.1 + 0.2 }}
-                            viewport={{ once: true }}
-                          >
-                            ★
-                          </motion.span>
-                        ))}
-                      </div>
-                      <p className="text-gray-700 leading-relaxed mb-6 italic">
-                        "{testimonial.review}"
-                      </p>
-                      <div className="mb-4">
-                        <div className="text-sm text-gray-500 font-medium">Project:</div>
-                        <div className="text-[#0056D2] font-semibold">{testimonial.project}</div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                          <div className="text-sm text-gray-600">{testimonial.role}, {testimonial.company}</div>
+                    Retry
+                  </button>
+                </div>
+              )}
+              
+              {!loading && !error && testimonials.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-gray-600">No testimonials available yet.</p>
+                </div>
+              )}
+              
+              {!loading && !error && testimonials.length > 0 && (
+                <motion.div 
+                  className="grid grid-cols-1 md:grid-cols-3 gap-8"
+                  variants={staggerContainer}
+                  initial="initial"
+                  whileInView="animate"
+                  viewport={{ once: true }}
+                >
+                  {testimonials.map((testimonial, i) => (
+                  <motion.div
+                      key={testimonial.id}
+                      variants={fadeInUp}
+                      className="group relative bg-white/90 backdrop-blur-sm p-8 rounded-2xl border border-white/20 shadow-lg hover:shadow-2xl transition-all duration-300"
+                      whileHover={{ 
+                        y: -8,
+                        transition: { duration: 0.3 }
+                      }}
+                    >
+                      <div className="absolute inset-0 brand-gradient-soft rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="relative">
+                        <div className="flex gap-1 mb-4">
+                          {[...Array(testimonial.rating || 5)].map((_, starIndex) => (
+                            <motion.span
+                              key={starIndex}
+                              className="text-[#00FF88] text-lg"
+                              initial={{ scale: 0 }}
+                              whileInView={{ scale: 1 }}
+                              transition={{ delay: starIndex * 0.1 + 0.2 }}
+                              viewport={{ once: true }}
+                            >
+                              ★
+                            </motion.span>
+                          ))}
                         </div>
-                        <motion.div 
-                          className="px-3 py-1 rounded-full bg-gray-100 text-[#0056D2] text-xs font-medium"
-                          whileHover={{ scale: 1.05 }}
-                        >
-                          Verified Client
-                        </motion.div>
+                        <p className="text-gray-700 leading-relaxed mb-6 italic">
+                          "{testimonial.review}"
+                        </p>
+                        <div className="mb-4">
+                          <div className="text-sm text-gray-500 font-medium">Project:</div>
+                          <div className="text-[#0056D2] font-semibold">{testimonial.project}</div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="font-semibold text-gray-900">{testimonial.name}</div>
+                            <div className="text-sm text-gray-600">{testimonial.role}, {testimonial.company}</div>
+                          </div>
+                          <motion.div 
+                            className="px-3 py-1 rounded-full bg-gray-100 text-[#0056D2] text-xs font-medium"
+                            whileHover={{ scale: 1.05 }}
+                          >
+                            Verified Client
+                          </motion.div>
+                        </div>
                       </div>
-                    </div>
-                  </motion.div>
-              ))}
-            </motion.div>
-            )}
-          </div>
-        </AnimatedSection>
+                    </motion.div>
+                ))}
+              </motion.div>
+              )}
+            </div>
+          </AnimatedSection>
+        </section>
 
         {/* CTA Section */}
         <motion.section 

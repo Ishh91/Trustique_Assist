@@ -133,6 +133,14 @@ export default function Navbar() {
             >
               About
             </Link>
+
+            {/* Portfolio Link */}
+            <Link
+              to="/portfolio"
+              className="text-gray-700 hover:text-[#0056D2] transition-colors duration-200 font-medium"
+            >
+              Portfolio
+            </Link>
             
             {/* Services Dropdown - Positioned after About */}
             <div className="relative" ref={dropdownRef}>
@@ -310,6 +318,13 @@ export default function Navbar() {
               </div>
 
               {/* Remaining Mobile Links */}
+              <Link
+                to="/portfolio"
+                className="block text-gray-700 hover:text-[#0056D2] transition-colors duration-200 font-medium py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Portfolio
+              </Link>
               <Link
                 to="/blog"
                 className="block text-gray-700 hover:text-[#0056D2] transition-colors duration-200 font-medium py-2"

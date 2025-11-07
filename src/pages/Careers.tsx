@@ -1,6 +1,6 @@
-import { Briefcase, MapPin, Clock, Users, ArrowRight, Sparkles, Award, Heart, Zap, Globe, Star, CheckCircle, Code, Palette, Cloud, MessageCircle, LucideIcon } from 'lucide-react';
+import { Briefcase, MapPin, Clock, Users, ArrowRight, Sparkles, Award, Heart, Zap, Globe, Star, CheckCircle, Code, Palette, Cloud, MessageCircle, LucideIcon, Mail, Phone, MessageSquare } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ApplicationForm from '../components/ApplicationForm';
 
@@ -29,7 +29,26 @@ export default function Careers() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedRoleId, setSelectedRoleId] = useState<string>('');
   const [hoveredRole, setHoveredRole] = useState<string | null>(null);
+  const [copiedEmail, setCopiedEmail] = useState(false);
   
+  // Scroll to open roles section
+  const scrollToOpenRoles = () => {
+    const element = document.getElementById('open-roles');
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
+  // Copy email to clipboard
+  const copyEmailToClipboard = () => {
+    navigator.clipboard.writeText('hr@trustiqueassist.in');
+    setCopiedEmail(true);
+    setTimeout(() => setCopiedEmail(false), 2000);
+  };
+
   const openRoles = [
     {
       id: 'frontend-engineer',
@@ -103,7 +122,6 @@ export default function Careers() {
       description: 'Drive business growth by acquiring new clients and managing relationships with enterprise customers.',
       requirements: ['Sales experience', 'Excellent communication', 'CRM knowledge', 'Target-driven mindset']
     },
-    // NEW ROLES ADDED BELOW
     {
       id: 'ai-ml-engineer',
       title: 'AI/ML Engineer',
@@ -231,13 +249,13 @@ export default function Careers() {
               transition={{ delay: 0.3 }}
               className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             >
-              <Link 
-                to="#open-roles"
+              <button 
+                onClick={scrollToOpenRoles}
                 className="brand-gradient-bg text-white px-8 py-4 rounded-full hover:shadow-2xl hover:scale-105 transition-all duration-300 font-semibold flex items-center gap-2"
               >
                 Explore {openRoles.length} Open Roles
                 <ArrowRight size={18} />
-              </Link>
+              </button>
               <button 
                 onClick={() => {
                   setSelectedRoleId('');
@@ -468,6 +486,129 @@ export default function Careers() {
         </div>
       </section>
 
+      {/* HR Contact Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Get in Touch with HR
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Have questions about our hiring process or want to discuss career opportunities? 
+              Our HR team is here to help.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="max-w-4xl mx-auto"
+          >
+            <div className="bg-gradient-to-br from-[#0056D2] to-[#00FF88] rounded-3xl p-8 text-white relative overflow-hidden">
+              {/* Background Pattern */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-0 left-0 w-32 h-32 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+                <div className="absolute bottom-0 right-0 w-48 h-48 bg-white rounded-full translate-x-1/2 translate-y-1/2"></div>
+              </div>
+
+              <div className="relative z-10">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {/* Email */}
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className="text-center p-6 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20"
+                  >
+                    <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Mail className="text-white" size={28} />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">Email Us</h3>
+                    <div className="space-y-2">
+                      <div 
+                        onClick={copyEmailToClipboard}
+                        className="cursor-pointer group"
+                      >
+                        <p className="text-white/90 text-sm font-medium group-hover:text-white transition-colors">
+                          hr@trustiqueassist.in
+                        </p>
+                        <p className="text-white/70 text-xs mt-1">
+                          {copiedEmail ? '✓ Copied to clipboard!' : 'Click to copy'}
+                        </p>
+                      </div>
+                    </div>
+                    <a 
+                      href="mailto:hr@trustiqueassist.in"
+                      className="inline-block mt-4 bg-white text-[#0056D2] px-4 py-2 rounded-full text-sm font-semibold hover:shadow-lg transition-all duration-300"
+                    >
+                      Send Email
+                    </a>
+                  </motion.div>
+
+                  {/* Quick Response */}
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className="text-center p-6 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20"
+                  >
+                    <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <MessageSquare className="text-white" size={28} />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">Quick Response</h3>
+                    <p className="text-white/90 text-sm mb-4">
+                      We typically respond to all career inquiries within 24-48 hours
+                    </p>
+                    <div className="text-white/70 text-xs">
+                      Mon - Fri, 9AM - 6PM IST
+                    </div>
+                  </motion.div>
+
+                  {/* Application Support */}
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className="text-center p-6 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20"
+                  >
+                    <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Users className="text-white" size={28} />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">Application Support</h3>
+                    <p className="text-white/90 text-sm mb-4">
+                      Need help with your application? We're here to assist you through the process.
+                    </p>
+                    <div className="text-white/70 text-xs">
+                      Resume reviews & interview prep
+                    </div>
+                  </motion.div>
+                </div>
+
+                {/* Additional Info */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2 }}
+                  className="mt-8 text-center"
+                >
+                  <p className="text-white/80 text-sm">
+                    Prefer to apply via email? Send your resume and cover letter to{' '}
+                    <span 
+                      onClick={copyEmailToClipboard}
+                      className="font-semibold cursor-pointer hover:text-white transition-colors"
+                    >
+                      hr@trustiqueassist.in
+                    </span>
+                    {' '}with the position title in the subject line.
+                  </p>
+                </motion.div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Final CTA Section */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -519,10 +660,10 @@ export default function Careers() {
                   <ArrowRight size={20} />
                 </button>
                 <a
-                  href="mailto:careers@trustiqueassist.in"
+                  href="mailto:hr@trustiqueassist.in"
                   className="border-2 border-white text-white px-8 py-4 rounded-full hover:bg-white hover:text-[#0056D2] transition-all duration-300 font-semibold"
                 >
-                  Email Your Resume
+                  Email HR Team
                 </a>
               </motion.div>
             </div>

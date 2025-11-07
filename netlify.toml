@@ -5,10 +5,35 @@
 [build.environment]
   NODE_VERSION = "18"
 
+# SPA routing - serve index.html for all routes
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+# API proxy to backend
+[[redirects]]
+  from = "/api/*"
+  to = "https://trustique-assist.onrender.com/api/:splat"
+  status = 200
+
+# Ensure proper MIME types for assets
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Content-Type = "application/javascript"
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Content-Type = "text/css"
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
 
 [context.production.environment]
   VITE_API_URL = "https://trustique-assist.onrender.com"

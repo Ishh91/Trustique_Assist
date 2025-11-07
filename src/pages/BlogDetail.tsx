@@ -28,7 +28,8 @@ export default function BlogDetail() {
 
   const fetchPost = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/api/blog/${slug}`);
+      const apiBase = import.meta.env.PROD ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:3001');
+      const response = await fetch(`${apiBase}/blog/${slug}`);
       if (!response.ok) {
         throw new Error('Post not found');
       }

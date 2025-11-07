@@ -1,0 +1,14 @@
+# Netlify redirects for SPA
+# Handle all routes by serving index.html
+/*    /index.html   200
+
+# Ensure API calls don't get redirected
+/api/*  https://trustique-assist.onrender.com/api/:splat  200
+
+# Handle static assets
+/assets/*  /assets/:splat  200
+/*.css  /*.css  200
+/*.js   /*.js   200
+/*.png  /*.png  200
+/*.jpg  /*.jpg  200
+/*.svg  /*.svg  200

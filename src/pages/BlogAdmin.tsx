@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Edit, Trash2, Eye, Save, X } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
 
 interface BlogPost {
   id: string;
@@ -32,7 +32,8 @@ const BlogAdmin: React.FC = () => {
     published: false
   });
 
-  const API_URL = 'http://localhost:3001/api/admin/blog';
+  const apiBase = import.meta.env.PROD ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:3001');
+  const API_URL = `${apiBase}/admin/blog`;
 
   useEffect(() => {
     fetchPosts();

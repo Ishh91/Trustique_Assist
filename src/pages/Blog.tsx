@@ -34,7 +34,8 @@ export default function Blog() {
       if (searchTerm) params.append('search', searchTerm);
       if (selectedTag) params.append('tag', selectedTag);
       
-      const response = await fetch(`https://trustique-assist.onrender.com/api/blog?${params}`);
+      const apiBase = import.meta.env.PROD ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:3001');
+      const response = await fetch(`${apiBase}/blog?${params}`);
       if (!response.ok) {
         throw new Error('Failed to fetch posts');
       }

@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Target, Users, Award, TrendingUp, Mail, Github, Linkedin, Twitter, Calendar, X, ExternalLink, Star, MapPin, Briefcase } from 'lucide-react';
 import { teamMembers } from '../data/team';
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 // Particle Background Component for About Page
 const AboutParticleBackground = () => {
@@ -692,7 +693,7 @@ export default function About() {
               })}
             </motion.div>
 
-            {/* Join Team CTA */}
+            {/* Join Team CTA - Now redirects to careers page */}
             <motion.div 
               className="text-center mt-12"
               initial={{ opacity: 0, y: 30 }}
@@ -700,13 +701,15 @@ export default function About() {
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
             >
-              <motion.button
-                className="px-8 py-4 rounded-full border-2 border-gray-300 text-gray-700 hover:border-[#0056D2] hover:text-[#0056D2] transition-all duration-300 font-medium bg-white/80 backdrop-blur-sm"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Join Our Team
-              </motion.button>
+              <Link to="/careers">
+                <motion.button
+                  className="px-8 py-4 rounded-full border-2 border-gray-300 text-gray-700 hover:border-[#0056D2] hover:text-[#0056D2] transition-all duration-300 font-medium bg-white/80 backdrop-blur-sm"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Join Our Team
+                </motion.button>
+              </Link>
             </motion.div>
           </motion.section>
 
@@ -742,18 +745,20 @@ export default function About() {
               >
                 Let's discuss how we can help you achieve your digital goals
               </motion.p>
-              <motion.button
-                className="bg-white text-[#0056D2] px-8 py-4 rounded-full hover:shadow-2xl transition-all duration-300 font-medium flex items-center gap-2 mx-auto"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 }}
-              >
-                <Calendar size={20} />
-                Schedule a Consultation
-              </motion.button>
+              <Link to="/contact">
+                <motion.button
+                  className="bg-white text-[#0056D2] px-8 py-4 rounded-full hover:shadow-2xl transition-all duration-300 font-medium flex items-center gap-2 mx-auto"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <Calendar size={20} />
+                  Schedule a Consultation
+                </motion.button>
+              </Link>
             </div>
           </motion.div>
         </div>
