@@ -77,10 +77,16 @@ export default function Home() {
 
   const fetchTestimonials = async () => {
     try {
-      const apiBase = import.meta.env.PROD ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:3001');
+      const apiBase = (import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:3001'));
       const response = await fetch(`${apiBase}/testimonials`);
       if (!response.ok) {
-        throw new Error('Failed to fetch testimonials');
+        throw new Error(`Failed to fetch testimonials (${response.status})`);
+      }
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('Non-JSON response from testimonials:', text.slice(0, 200));
+        throw new Error('Unexpected non-JSON response from testimonials');
       }
       const data = await response.json();
       setTestimonials(data);

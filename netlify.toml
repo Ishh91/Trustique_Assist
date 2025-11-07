@@ -5,16 +5,16 @@
 [build.environment]
   NODE_VERSION = "18"
 
-# SPA routing - serve index.html for all routes
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
-# API proxy to backend
+# API proxy to backend (must precede SPA fallback)
 [[redirects]]
   from = "/api/*"
   to = "https://trustique-assist.onrender.com/api/:splat"
+  status = 200
+
+# SPA routing - serve index.html for all other routes
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
   status = 200
 
 # Ensure proper MIME types for assets
