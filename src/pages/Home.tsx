@@ -6,6 +6,7 @@ import Hero from '../components/Hero';
 import { services } from '../data/services';
 
 // Lazy load heavy components
+// @ts-ignore
 const AnimatedBackground = lazy(() => import('../components/AnimatedBackground'));
 
 // Testimonial interface
