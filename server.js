@@ -3,6 +3,7 @@ import cors from 'cors';
 import sqlite3 from 'sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -92,8 +93,7 @@ db.serialize(() => {
       publishedAt TEXT
     )
   `);
-  
-  // Create testimonials table
+
   db.run(`
     CREATE TABLE IF NOT EXISTS testimonials (
       id TEXT PRIMARY KEY,
@@ -108,7 +108,17 @@ db.serialize(() => {
       createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
       updatedAt TEXT DEFAULT CURRENT_TIMESTAMP
     )
-  `);
+  `, () => {
+      // Clear existing testimonials before seeding
+      db.run('DELETE FROM testimonials', (err) => {
+        if (err) {
+          console.error('Error clearing testimonials table:', err);
+        } else {
+          // Seed testimonials from testimonials.json
+          seedTestimonials();
+        }
+      });
+  });
 });
 
 // Helper function to generate slug
@@ -117,6 +127,42 @@ function generateSlug(title) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
+}
+
+function seedTestimonials() {
+  fs.readFile(path.join(__dirname, 'testimonials.json'), 'utf8', (err, data) => {   
+    if (err) {
+      console.error('Error reading testimonials.json:', err);
+      return;
+    }
+    try {
+      const testimonials = JSON.parse(data);
+      const stmt = db.prepare(
+        `INSERT INTO testimonials (id, name, role, company, review, project, rating, featuredImage, isActive)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      );
+      db.serialize(() => {
+        testimonials.forEach(testimonial => {
+          const id = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+          stmt.run(
+            id,
+            testimonial.name,
+            testimonial.role,
+            testimonial.company,
+            testimonial.review,
+            testimonial.project,
+            testimonial.rating,
+            testimonial.featuredImage,
+            testimonial.isActive
+          );
+        });
+        stmt.finalize();
+        console.log('Testimonials seeded successfully.');
+      });
+    } catch (parseErr) {
+      console.error('Error parsing testimonials.json:', parseErr);
+    }
+  });
 }
 
 // Blog API Routes
