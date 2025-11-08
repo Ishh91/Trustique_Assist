@@ -71,6 +71,49 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const featured = services.slice(0, 6);
 
+  // Fallback testimonials used when API is unavailable or blocked
+  const fallbackTestimonials: Testimonial[] = [
+    {
+      id: 'fallback-1',
+      name: 'Pushpanjali Groups',
+      role: 'E-commerce Partner',
+      company: 'Pushpanjali Groups',
+      review: 'Pushpanjali is a food e-commerce website we developed to sell organic Amla (Indian Gooseberry) products. It features a clean design, easy navigation, secure payments, and a smooth shopping experience — promoting healthy, traditional food products through a modern online platform.',
+      project: 'Amla E-commerce Platform',
+      rating: 5,
+      featuredImage: undefined,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    {
+      id: 'fallback-2',
+      name: 'SafeSense Tech Pvt. Ltd.',
+      role: 'Technology Partner',
+      company: 'SafeSense Tech Pvt. Ltd.',
+      review: 'We created the official website for SafeSense Tech Pvt. Ltd., a company that provides IoT-based software solutions. The website showcases their products, services, and innovations with a modern, responsive design and a professional interface that reflects their focus on smart technology and digital transformation.',
+      project: 'IoT Solutions Website',
+      rating: 5,
+      featuredImage: undefined,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    {
+      id: 'fallback-3',
+      name: 'Safecure Services Limited',
+      role: 'Security Services Partner',
+      company: 'Safecure Services Limited',
+      review: 'We developed a professional and dynamic website for Safecure Service Limited, emphasizing their commitment to safety, reliability, and integrated security solutions. The site showcases their modern approach, advanced technology, and client-focused services, designed to strengthen their digital presence and brand credibility.',
+      project: 'Security Services Website',
+      rating: 5,
+      featuredImage: undefined,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }
+  ];
+
   useEffect(() => {
     fetchTestimonials();
   }, []);
@@ -78,7 +121,10 @@ export default function Home() {
   const fetchTestimonials = async () => {
     try {
       const apiBase = (import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:3001'));
-      const response = await fetch(`${apiBase}/testimonials`);
+      const testimonialsUrl = apiBase.endsWith('/api')
+        ? `${apiBase}/testimonials`
+        : `${apiBase}/api/testimonials`;
+      const response = await fetch(testimonialsUrl);
       if (!response.ok) {
         throw new Error(`Failed to fetch testimonials (${response.status})`);
       }
@@ -86,13 +132,18 @@ export default function Home() {
       if (!contentType.includes('application/json')) {
         const text = await response.text();
         console.error('Non-JSON response from testimonials:', text.slice(0, 200));
-        throw new Error('Unexpected non-JSON response from testimonials');
+        // Fall back to local testimonials when non-JSON is received (e.g., HTML from misconfigured hosting)
+        setError(null);
+        setTestimonials(fallbackTestimonials);
+        return;
       }
       const data = await response.json();
-      setTestimonials(data);
+      setTestimonials(data && Array.isArray(data) && data.length > 0 ? data : fallbackTestimonials);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
       console.error('Error fetching testimonials:', err);
+      // On error (network/CORS), show the provided testimonials
+      setError(null);
+      setTestimonials(fallbackTestimonials);
     } finally {
       setLoading(false);
     }

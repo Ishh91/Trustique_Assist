@@ -1,65 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import logo from '../img/logo.png';
-
-// Import services directly with a fallback
-let services: any[] = [];
-
-try {
-  // Try different possible import paths
-  const servicesModule = require('../data/services');
-  services = servicesModule.services || servicesModule.default || [];
-} catch (error) {
-  console.log('Services import failed, using fallback:', error);
-  
-  // Fallback services data in case import fails
-  services = [
-    {
-      icon: () => <span>💻</span>,
-      title: 'Web Development',
-      description: 'Custom websites and web applications',
-      slug: 'custom-web-development'
-    },
-    {
-      icon: () => <span>📱</span>,
-      title: 'Mobile Apps',
-      description: 'iOS and Android applications',
-      slug: 'mobile-app-development'
-    },
-    {
-      icon: () => <span>🔒</span>,
-      title: 'Cybersecurity',
-      description: 'Security solutions and audits',
-      slug: 'cybersecurity-and-compliance'
-    },
-    {
-      icon: () => <span>🤖</span>,
-      title: 'AI Solutions',
-      description: 'Artificial intelligence systems',
-      slug: 'ai-and-machine-learning-solutions'
-    },
-    {
-      icon: () => <span>☁️</span>,
-      title: 'Cloud Services',
-      description: 'Cloud infrastructure and deployment',
-      slug: 'cloud-infrastructure-and-devops'
-    },
-    {
-      icon: () => <span>🎨</span>,
-      title: 'UI/UX Design',
-      description: 'User interface and experience design',
-      slug: 'ux-ui-design-and-product-strategy'
-    }
-  ];
-}
+import { services } from '../data/services';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isServicesDropdownOpen, setIsServicesDropdownOpen] = useState(false);
+  const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const mobileDropdownRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -71,9 +23,12 @@ export default function Navbar() {
 
   // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: { target: any; }) => {
+    const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !(dropdownRef.current as any).contains(event.target)) {
         setIsServicesDropdownOpen(false);
+      }
+      if (mobileDropdownRef.current && !(mobileDropdownRef.current as any).contains(event.target)) {
+        setIsMobileServicesOpen(false);
       }
     };
 
@@ -83,7 +38,12 @@ export default function Navbar() {
     };
   }, []);
 
-  // Navigation links with Services positioned after About
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setIsMobileServicesOpen(false);
+  }, []);
+
   const navLinks = [
     { label: 'Home', to: '/' },
     { label: 'About', to: '/about' },
@@ -274,11 +234,11 @@ export default function Navbar() {
             exit={{ opacity: 0, height: 0 }}
             className="md:hidden bg-white/95 backdrop-blur-lg border-t border-[#E5E5E5] overflow-hidden"
           >
-            <div className="px-4 pt-4 pb-6 space-y-4">
+            <div className="px-4 pt-4 pb-6 space-y-1">
               {/* Home Link */}
               <Link
                 to="/"
-                className="block text-gray-700 hover:text-[#0056D2] transition-colors duration-200 font-medium py-2"
+                className="block text-gray-700 hover:text-[#0056D2] transition-colors duration-200 font-medium py-3 px-2 rounded-lg hover:bg-gray-50"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Home
@@ -287,47 +247,108 @@ export default function Navbar() {
               {/* About Link */}
               <Link
                 to="/about"
-                className="block text-gray-700 hover:text-[#0056D2] transition-colors duration-200 font-medium py-2"
+                className="block text-gray-700 hover:text-[#0056D2] transition-colors duration-200 font-medium py-3 px-2 rounded-lg hover:bg-gray-50"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 About
               </Link>
-              
-              {/* Mobile Services Section - Positioned after About */}
-              <div className="border-t border-gray-200 pt-4">
-                <div className="space-y-2">
-                  <h4 className="font-semibold text-gray-900 mb-2">Services</h4>
-                  {services.slice(0, 6).map((service) => (
-                    <Link
-                      key={service.slug}
-                      to={`/services/${service.slug}`}
-                      className="block text-gray-600 hover:text-[#0056D2] transition-colors duration-200 text-sm py-2 pl-4 border-l-2 border-gray-200 hover:border-[#0056D2]"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      {service.title}
-                    </Link>
-                  ))}
-                  <Link
-                    to="/services"
-                    className="block text-[#0056D2] font-semibold text-sm py-2 mt-2 pl-4 border-l-2 border-[#0056D2]"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    View All Services →
-                  </Link>
-                </div>
-              </div>
 
-              {/* Remaining Mobile Links */}
+              {/* Portfolio Link */}
               <Link
                 to="/portfolio"
-                className="block text-gray-700 hover:text-[#0056D2] transition-colors duration-200 font-medium py-2"
+                className="block text-gray-700 hover:text-[#0056D2] transition-colors duration-200 font-medium py-3 px-2 rounded-lg hover:bg-gray-50"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Portfolio
               </Link>
+
+              {/* Mobile Services Dropdown */}
+              <div className="relative" ref={mobileDropdownRef}>
+                <button
+                  onClick={() => setIsMobileServicesOpen(!isMobileServicesOpen)}
+                  className="w-full flex items-center justify-between text-gray-700 hover:text-[#0056D2] transition-colors duration-200 font-medium py-3 px-2 rounded-lg hover:bg-gray-50"
+                >
+                  <span>Services</span>
+                  <ChevronDown 
+                    size={18} 
+                    className={`transition-transform duration-200 ${
+                      isMobileServicesOpen ? 'rotate-180' : ''
+                    }`} 
+                  />
+                </button>
+
+                {/* Mobile Services Dropdown Content */}
+                <AnimatePresence>
+                  {isMobileServicesOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="ml-4 mt-2 space-y-2 overflow-hidden"
+                    >
+                      {services.map((service, index) => {
+                        const Icon = service.icon;
+                        return (
+                          <motion.div
+                            key={service.slug}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                          >
+                            <Link
+                              to={`/services/${service.slug}`}
+                              className="flex items-center gap-3 py-2.5 px-3 rounded-lg text-gray-600 hover:text-[#0056D2] hover:bg-gradient-to-r hover:from-[#0056D2]/5 hover:to-[#00FF88]/5 transition-all duration-200 group border border-transparent hover:border-[#0056D2]/10"
+                              onClick={() => {
+                                setIsMobileMenuOpen(false);
+                                setIsMobileServicesOpen(false);
+                              }}
+                            >
+                              <div className="flex-shrink-0">
+                                <div className="w-8 h-8 rounded-lg brand-gradient-bg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                                  <Icon className="text-white" size={16} />
+                                </div>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-semibold text-gray-900 text-sm group-hover:text-[#0056D2] transition-colors">
+                                  {service.title}
+                                </h4>
+                                <p className="text-gray-500 text-xs line-clamp-1 mt-0.5">
+                                  {service.description}
+                                </p>
+                              </div>
+                              <ChevronRight size={16} className="text-gray-400 group-hover:text-[#0056D2] transition-colors" />
+                            </Link>
+                          </motion.div>
+                        );
+                      })}
+                      
+                      {/* View All Services Link */}
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: services.length * 0.05 + 0.1 }}
+                        className="pt-2 border-t border-gray-200"
+                      >
+                        <Link
+                          to="/services"
+                          className="block text-center brand-gradient-bg text-white py-2.5 px-4 rounded-xl hover:shadow-lg transition-all duration-200 text-sm font-semibold mt-2"
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            setIsMobileServicesOpen(false);
+                          }}
+                        >
+                          View All Services
+                        </Link>
+                      </motion.div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Remaining Mobile Links */}
               <Link
                 to="/blog"
-                className="block text-gray-700 hover:text-[#0056D2] transition-colors duration-200 font-medium py-2"
+                className="block text-gray-700 hover:text-[#0056D2] transition-colors duration-200 font-medium py-3 px-2 rounded-lg hover:bg-gray-50"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Blog
@@ -335,7 +356,7 @@ export default function Navbar() {
 
               <Link
                 to="/careers"
-                className="block text-gray-700 hover:text-[#0056D2] transition-colors duration-200 font-medium py-2"
+                className="block text-gray-700 hover:text-[#0056D2] transition-colors duration-200 font-medium py-3 px-2 rounded-lg hover:bg-gray-50"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Careers
@@ -343,13 +364,14 @@ export default function Navbar() {
 
               <Link
                 to="/contact"
-                className="block text-gray-700 hover:text-[#0056D2] transition-colors duration-200 font-medium py-2"
+                className="block text-gray-700 hover:text-[#0056D2] transition-colors duration-200 font-medium py-3 px-2 rounded-lg hover:bg-gray-50"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Contact
               </Link>
 
-              <div className="pt-4 border-t border-gray-200">
+              {/* Get Started Button */}
+              <div className="pt-4 border-t border-gray-200 mt-4">
                 <Link 
                   to="/contact" 
                   className="w-full brand-gradient-bg text-white px-6 py-3 rounded-full hover:shadow-lg transition-all duration-200 font-semibold text-center block"

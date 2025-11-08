@@ -1,6 +1,9 @@
 import { toSlug } from '../utils/slug';
 
 export type PortfolioItem = {
+  completed: string;
+  views: string;
+  liveUrl: any;
   title: string;
   client: string;
   description: string;

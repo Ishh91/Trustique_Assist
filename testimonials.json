@@ -1,22 +1,32 @@
 [
   {
-    "name": "Michael Chen",
-    "role": "CTO",
-    "company": "DataFlow Systems",
-    "review": "Outstanding AI integration and machine learning solutions. The team delivered a sophisticated recommendation engine that increased our user engagement by 60%.",
-    "project": "AI Recommendation System",
+    "name": "Pushpanjali Groups",
+    "role": "E-commerce Partner",
+    "company": "Pushpanjali Groups",
+    "review": "Pushpanjali is a food e-commerce website we developed to sell organic Amla (Indian Gooseberry) products. It features a clean design, easy navigation, secure payments, and a smooth shopping experience — promoting healthy, traditional food products through a modern online platform.",
+    "project": "Amla E-commerce Platform",
     "rating": 5,
-    "featuredImage": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3",
+    "featuredImage": "",
     "isActive": true
   },
   {
-    "name": "Emily Rodriguez",
-    "role": "Product Manager",
-    "company": "InnovateTech",
-    "review": "The intelligent automation solutions transformed our workflow completely. Their attention to detail and AI expertise is remarkable.",
-    "project": "Intelligent Automation Platform",
+    "name": "Safesense Tech Pvt Ltd",
+    "role": "IoT Solutions Provider",
+    "company": "Safesense Tech Pvt Ltd",
+    "review": "We created the official website for SafeSense Tech Pvt. Ltd., a company that provides IoT-based software solutions. The website showcases their products, services, and innovations with a modern, responsive design and a professional interface that reflects their focus on smart technology and digital transformation.",
+    "project": "IoT Solutions Website",
     "rating": 5,
-    "featuredImage": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3",
+    "featuredImage": "",
+    "isActive": true
+  },
+  {
+    "name": "Safecure services Limited",
+    "role": "Security Solutions",
+    "company": "Safecure services Limited",
+    "review": "We developed a professional and dynamic website for Safecure Service Limited, emphasizing their commitment to safety, reliability, and integrated security solutions. The site showcases their modern approach, advanced technology, and client-focused services, designed to strengthen their digital presence and brand credibility.",
+    "project": "Security Services Website",
+    "rating": 5,
+    "featuredImage": "",
     "isActive": true
   }
 ]

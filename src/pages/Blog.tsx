@@ -35,7 +35,7 @@ export default function Blog() {
       if (selectedTag) params.append('tag', selectedTag);
       
       const apiBase = (import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:3001'));
-      const response = await fetch(`${apiBase}/blog?${params}`);
+      const response = await fetch(`${apiBase}/api/blog?${params}`);
       if (!response.ok) {
         throw new Error(`Failed to fetch posts (${response.status})`);
       }
