@@ -132,33 +132,7 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 md:gap-12 mb-8 md:mb-12">
             {/* Newsletter on Left Side */}
-            <div className="lg:col-span-1">
-              <div className="bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl p-4 md:p-6 border border-gray-700/50 h-full">
-                <h4 className="text-white font-bold text-lg md:text-xl mb-2 md:mb-3">
-                  Stay Updated
-                </h4>
-                <p className="text-gray-300 text-xs md:text-sm mb-3 md:mb-4 leading-relaxed">
-                  Get the latest tech insights and updates delivered to your inbox.
-                </p>
-                <form onSubmit={handleNewsletterSubmit} className="space-y-2 md:space-y-3">
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    className="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-white/10 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 text-xs md:text-sm"
-                    required
-                  />
-                  <button 
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-3 md:px-4 py-2 md:py-3 rounded-lg hover:shadow-lg transition-all duration-300 font-medium text-xs md:text-sm"
-                  >
-                    Subscribe
-                  </button>
-                </form>
-                <p className="text-gray-400 text-xs mt-2 md:mt-3 text-center">
-                  No spam. Unsubscribe anytime.
-                </p>
-              </div>
-            </div>
+            
 
             {/* Footer Links on Right Side */}
             <div className="lg:col-span-3">
@@ -254,6 +228,33 @@ export default function Footer() {
                     </ul>
                   </div>
                 ))}
+              </div>
+            </div>
+            <div className="lg:col-span-1">
+              <div className="bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl p-4 md:p-6 border border-gray-700/50 h-full">
+                <h4 className="text-white font-bold text-lg md:text-xl mb-2 md:mb-3">
+                  Stay Updated
+                </h4>
+                <p className="text-gray-300 text-xs md:text-sm mb-3 md:mb-4 leading-relaxed">
+                  Get the latest tech insights and updates delivered to your inbox.
+                </p>
+                <form onSubmit={handleNewsletterSubmit} className="space-y-2 md:space-y-3">
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-white/10 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 text-xs md:text-sm"
+                    required
+                  />
+                  <button 
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-3 md:px-4 py-2 md:py-3 rounded-lg hover:shadow-lg transition-all duration-300 font-medium text-xs md:text-sm"
+                  >
+                    Subscribe
+                  </button>
+                </form>
+                <p className="text-gray-400 text-xs mt-2 md:mt-3 text-center">
+                  No spam. Unsubscribe anytime.
+                </p>
               </div>
             </div>
           </div>

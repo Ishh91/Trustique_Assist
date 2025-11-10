@@ -109,13 +109,18 @@ db.serialize(() => {
       updatedAt TEXT DEFAULT CURRENT_TIMESTAMP
     )
   `, () => {
-      // Clear existing testimonials before seeding
-      db.run('DELETE FROM testimonials', (err) => {
+      // Seed testimonials only if the table is empty
+      db.get('SELECT COUNT(*) as count FROM testimonials', (err, row) => {
         if (err) {
-          console.error('Error clearing testimonials table:', err);
-        } else {
-          // Seed testimonials from testimonials.json
+          console.error('Error checking testimonials count:', err);
+          return;
+        }
+        
+        if (row.count === 0) {
+          console.log('Testimonials table is empty, seeding data...');
           seedTestimonials();
+        } else {
+          console.log('Testimonials table already contains data, skipping seed.');
         }
       });
   });
