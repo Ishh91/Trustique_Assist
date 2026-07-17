@@ -14,6 +14,12 @@ export default defineConfig({
     // Ensure static files are copied
   },
   server: {
-    // historyApiFallback is not a valid Vite server option; React Router works via client-side routing
+    proxy: {}, // Required workaround for Vite 5+ to enable historyApiFallback
+    middlewareMode: false,
+    fs: {
+      // Allow SPA routing by serving index.html for unmatched paths
+      allow: ['.']
+    },
+    // Fix SPA routing in dev server (Vite uses internal fallback instead of explicit historyApiFallback)
   }
 });

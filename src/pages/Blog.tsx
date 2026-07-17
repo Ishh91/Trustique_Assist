@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
 
 interface BlogPost {
   id: string;
@@ -60,28 +61,45 @@ export default function Blog() {
     }
   };
 
+  const seoTags = (
+    <SEO 
+      title="Trustique Assist Blog - Tech Insights & Guides"
+      description="Explore the Trustique Assist blog for insights on web development, AI, digital transformation, software engineering, and more!"
+      keywords="trustique blog, tech insights, web development guides, AI articles, digital transformation blog"
+      url="https://trustiqueassist.com/blog"
+    />
+  );
+  
   if (loading) {
     return (
-      <section className="py-24 bg-bg-main">
-        <div className="px-4 sm:px-6 lg:px-8 text-center">
-          <div className="text-xl text-text-muted">Loading blog posts...</div>
-        </div>
-      </section>
+      <>
+        {seoTags}
+        <section className="py-24 bg-bg-main">
+          <div className="px-4 sm:px-6 lg:px-8 text-center">
+            <div className="text-xl text-text-muted">Loading blog posts...</div>
+          </div>
+        </section>
+      </>
     );
   }
 
   if (error) {
     return (
-      <section className="py-24 bg-bg-main">
-        <div className="px-4 sm:px-6 lg:px-8 text-center">
-          <div className="text-xl text-red-400">{error}</div>
-        </div>
-      </section>
+      <>
+        {seoTags}
+        <section className="py-24 bg-bg-main">
+          <div className="px-4 sm:px-6 lg:px-8 text-center">
+            <div className="text-xl text-red-400">{error}</div>
+          </div>
+        </section>
+      </>
     );
   }
 
   return (
-    <section className="py-24 bg-bg-main animate-fade-in">
+    <>
+      {seoTags}
+      <section className="py-24 bg-bg-main animate-fade-in">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-text-white mb-4">
@@ -178,5 +196,6 @@ export default function Blog() {
         )}
       </div>
     </section>
+    </>
   );
 }

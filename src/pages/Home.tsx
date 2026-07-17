@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import SEO from '../components/SEO';
 import { 
   ArrowRight, CheckCircle, Code, Smartphone, Globe, Database, Cloud, Zap, 
   Users, Shield, Bot, Brain, Cpu, Sparkles, MessageSquare, Mic, Server, 
@@ -509,7 +510,14 @@ export default function Home() {
   }, [fetchTestimonials]);
 
   return (
-    <div className="relative min-h-screen bg-bg-main">
+    <>
+      <SEO 
+        title="Trustique Assist - AI & Software Solutions Company | India"
+        description="Trustique Assist: AI specialists, developers & designers delivering intelligent software solutions. Machine Learning, Web Development, Mobile Apps, Digital Transformation."
+        keywords="AI solutions, software development, web development, machine learning, mobile app development, digital transformation, India, startup package, cloud solutions"
+        url="https://trustiqueassist.com"
+      />
+      <div className="relative min-h-screen bg-bg-main">
       {/* Floating Button */}
       <button
         onClick={() => navigate('/startup-package')}
@@ -1002,5 +1010,6 @@ export default function Home() {
         </section>
       </div>
     </div>
+    </>
   );
 }

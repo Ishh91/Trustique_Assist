@@ -1,10 +1,18 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { services } from '../data/services';
+import SEO from './SEO';
 
 export default function Services() {
   return (
-    <section id="services" className="section-shell">
+    <>
+      <SEO 
+        title="Trustique Assist Services - Web, AI & Software Solutions"
+        description="Explore Trustique Assist's services: Web Development, Mobile Apps, AI & ML, Cloud Solutions, ERP/CRM, Cybersecurity, Digital Marketing & more!"
+        keywords="trustique assist services, web development, mobile app development, AI, machine learning, cloud solutions, ERP, CRM, digital marketing, cybersecurity"
+        url="https://trustiqueassist.com/services"
+      />
+      <section id="services" className="section-shell">
       <div className="px-4 sm:px-6 lg:px-8">
         <motion.div 
           className="text-center mb-16"
@@ -75,5 +83,6 @@ export default function Services() {
         </div>
       </div>
     </section>
+    </>
   );
 }

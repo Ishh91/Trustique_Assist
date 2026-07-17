@@ -1,8 +1,16 @@
 import LegalPolicyLayout from './LegalPolicyLayout';
+import SEO from '../components/SEO';
 
 export default function PrivacyPolicy() {
   return (
-    <LegalPolicyLayout
+    <>
+      <SEO 
+        title="Trustique Assist Privacy Policy"
+        description="Read Trustique Assist's privacy policy to understand how we collect, use, and protect your data."
+        keywords="privacy policy, data protection, trustique assist privacy"
+        url="https://trustiqueassist.com/privacy-policy"
+      />
+      <LegalPolicyLayout
       title="Privacy Policy"
       lastUpdated="March 24, 2026"
       pdfPath="/privacy-policy.pdf"
@@ -66,8 +74,9 @@ export default function PrivacyPolicy() {
       <h2 id="section-6">6. Contact Us</h2>
       <p>
         If you have any questions or suggestions about our Privacy Policy, do not hesitate to
-        contact us at: info@trustiqueassist.in
+        contact us at: info@trustiqueassist.com
       </p>
     </LegalPolicyLayout>
+    </>
   );
 }

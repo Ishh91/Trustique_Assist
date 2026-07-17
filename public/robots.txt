@@ -7,8 +7,8 @@ Disallow: /wp-admin/
 Disallow: /dashboard/
 
 # Sitemaps
-Sitemap: https://trustiqueassist.in/sitemap.xml
-Sitemap: https://trustiqueassist.in/sitemap-index.xml
+Sitemap: https://trustiqueassist.com/sitemap.xml
+Sitemap: https://trustiqueassist.com/sitemap-index.xml
 
 # Crawl delay
 Crawl-delay: 10

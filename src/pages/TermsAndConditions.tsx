@@ -1,8 +1,16 @@
 import LegalPolicyLayout from './LegalPolicyLayout';
+import SEO from '../components/SEO';
 
 export default function TermsAndConditions() {
   return (
-    <LegalPolicyLayout
+    <>
+      <SEO 
+        title="Trustique Assist Terms and Conditions"
+        description="Read Trustique Assist's terms and conditions for using our website and services."
+        keywords="terms and conditions, terms of service, trustique assist terms"
+        url="https://trustiqueassist.com/terms-and-conditions"
+      />
+      <LegalPolicyLayout
       title="Terms and Conditions"
       lastUpdated="March 24, 2026"
       pdfPath="/terms-and-conditions.pdf"
@@ -65,8 +73,9 @@ export default function TermsAndConditions() {
       <h2 id="section-6">6. Contact Us</h2>
       <p>
         If you have any questions about these Terms, please contact us at:
-        info@trustiqueassist.in
+        info@trustiqueassist.com
       </p>
     </LegalPolicyLayout>
+    </>
   );
 }

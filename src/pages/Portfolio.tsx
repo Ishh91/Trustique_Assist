@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ExternalLink, ArrowRight, Eye, Code, Smartphone, Globe, Database, Users, Calendar, Target } from 'lucide-react';
 import { portfolio } from '../data/portfolio';
 import { useEffect, useRef } from 'react';
+import SEO from '../components/SEO';
 
 // Animation variants
 const fadeInUp = {
@@ -44,7 +45,14 @@ const categoryIcons = {
 
 export default function Portfolio() {
   return (
-    <div className="pt-24 min-h-screen relative overflow-hidden">
+    <>
+      <SEO 
+        title="Trustique Assist Portfolio - Our Projects & Case Studies"
+        description="Explore Trustique Assist's portfolio of web development, mobile apps, AI solutions, and digital transformation projects. See our work and success stories!"
+        keywords="trustique assist portfolio, case studies, web development portfolio, mobile app portfolio, AI projects"
+        url="https://trustiqueassist.com/portfolio"
+      />
+      <div className="pt-24 min-h-screen relative overflow-hidden">
       {/* Hero Section */}
       <section className="relative py-20 bg-bg-main overflow-hidden">
         <div className="px-4 sm:px-6 lg:px-8 relative z-10">
@@ -132,7 +140,7 @@ export default function Portfolio() {
             viewport={{ once: true }}
           >
             {portfolio.map((item, index) => {
-              const CategoryIcon = categoryIcons[item.category] || Globe;
+              const CategoryIcon = (categoryIcons as Record<string, typeof Globe>)[item.category] || Globe;
               
               return (
                 <motion.div
@@ -295,5 +303,6 @@ export default function Portfolio() {
         </div>
       </section>
     </div>
+    </>
   );
 }

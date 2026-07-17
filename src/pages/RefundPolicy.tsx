@@ -1,8 +1,16 @@
 import LegalPolicyLayout from './LegalPolicyLayout';
+import SEO from '../components/SEO';
 
 export default function RefundPolicy() {
   return (
-    <LegalPolicyLayout
+    <>
+      <SEO 
+        title="Trustique Assist Refund Policy"
+        description="Read Trustique Assist's refund policy for our software development and related services."
+        keywords="refund policy, trustique assist refund, terms of refund"
+        url="https://trustiqueassist.com/refund-policy"
+      />
+      <LegalPolicyLayout
       title="Refund Policy"
       lastUpdated="March 24, 2026"
       pdfPath="/refund-policy.pdf"
@@ -116,10 +124,11 @@ export default function RefundPolicy() {
       <p>
         Trustique Assist Services
         <br />
-        Email: info@trustiqueassist.in
+        Email: info@trustiqueassist.com
         <br />
         Phone: +91 8112403000
       </p>
     </LegalPolicyLayout>
+    </>
   );
 }

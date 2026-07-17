@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import SEO from '../components/SEO';
 
 export default function StartupPackage() {
   const navigate = useNavigate();
@@ -63,7 +64,14 @@ export default function StartupPackage() {
   ], []);
 
   return (
-    <div className="min-h-screen bg-bg-main py-16 px-4 sm:px-6 lg:px-8">
+    <>
+      <SEO 
+        title="Trustique Assist Full Startup Package - Launch Your Business"
+        description="Launch your startup with our complete package: company registration, website, brand identity, marketing, and more. All-in-one solution for new businesses!"
+        keywords="startup package, startup registration, business launch, company incorporation, website for startup"
+        url="https://trustiqueassist.com/startup-package"
+      />
+      <div className="min-h-screen bg-bg-main py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div 
@@ -140,5 +148,6 @@ export default function StartupPackage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

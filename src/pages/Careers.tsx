@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ApplicationForm from '../components/ApplicationForm';
+import SEO from '../components/SEO';
 
 // Animation variants
 const fadeInUp = {
@@ -44,7 +45,7 @@ export default function Careers() {
 
   // Copy email to clipboard
   const copyEmailToClipboard = () => {
-    navigator.clipboard.writeText('hr@trustiqueassist.in');
+    navigator.clipboard.writeText('hr@trustiqueassist.com');
     setCopiedEmail(true);
     setTimeout(() => setCopiedEmail(false), 2000);
   };
@@ -201,7 +202,14 @@ export default function Careers() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+    <>
+      <SEO 
+        title="Trustique Assist Careers - Join Our Team"
+        description="Explore job openings at Trustique Assist! Join our team of AI, software, and design experts. Remote & hybrid roles available!"
+        keywords="trustique assist careers, job openings, tech jobs, software jobs, AI jobs, remote jobs India"
+        url="https://trustiqueassist.com/careers"
+      />
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
       {/* Hero Section */}
       <section className="relative py-24 overflow-hidden">
         {/* Background Elements */}
@@ -534,7 +542,7 @@ export default function Careers() {
                         className="cursor-pointer group"
                       >
                         <p className="text-white/90 text-sm font-medium group-hover:text-white transition-colors">
-                          hr@trustiqueassist.in
+                          hr@trustiqueassist.com
                         </p>
                         <p className="text-white/70 text-xs mt-1">
                           {copiedEmail ? '✓ Copied to clipboard!' : 'Click to copy'}
@@ -542,7 +550,7 @@ export default function Careers() {
                       </div>
                     </div>
                     <a 
-                      href="mailto:hr@trustiqueassist.in"
+                      href="mailto:hr@trustiqueassist.com"
                       className="inline-block mt-4 bg-white text-[#0056D2] px-4 py-2 rounded-full text-sm font-semibold hover:shadow-lg transition-all duration-300"
                     >
                       Send Email
@@ -598,7 +606,7 @@ export default function Careers() {
                       onClick={copyEmailToClipboard}
                       className="font-semibold cursor-pointer hover:text-white transition-colors"
                     >
-                      hr@trustiqueassist.in
+                      hr@trustiqueassist.com
                     </span>
                     {' '}with the position title in the subject line.
                   </p>
@@ -660,7 +668,7 @@ export default function Careers() {
                   <ArrowRight size={20} />
                 </button>
                 <a
-                  href="mailto:hr@trustiqueassist.in"
+                  href="mailto:hr@trustiqueassist.com"
                   className="border-2 border-white text-white px-8 py-4 rounded-full hover:bg-white hover:text-[#0056D2] transition-all duration-300 font-semibold"
                 >
                   Email HR Team
@@ -685,5 +693,6 @@ export default function Careers() {
         selectedRoleId={selectedRoleId}
       />
     </div>
+    </>
   );
 }

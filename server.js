@@ -53,7 +53,9 @@ app.use(cors({
         'https://trustiqueassist21.netlify.app',
         'https://*.netlify.app',
         'https://trustiqueassist.in',
-        'https://www.trustiqueassist.in'
+        'https://www.trustiqueassist.in',
+        'https://trustiqueassist.com',
+        'https://www.trustiqueassist.com'
       ];
 
     // Allow adding origins via env var: CORS_ORIGINS=origin1,origin2

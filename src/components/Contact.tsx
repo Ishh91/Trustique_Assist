@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Mail, Phone, MapPin, Send, MessageCircle, Clock, Users, Shield } from 'lucide-react';
 import { motion } from 'framer-motion';
+import SEO from './SEO';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -13,7 +14,7 @@ export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const businessWhatsApp = '918112403000'; // Remove + for URL
-  const businessEmail = 'contact@trustiqueassist.in';
+  const businessEmail = 'contact@trustiqueassist.com';
 
   const services = [
     'Web Development',
@@ -77,7 +78,14 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="section-shell">
+    <>
+      <SEO 
+        title="Contact Trustique Assist - Get in Touch"
+        description="Contact Trustique Assist for AI solutions, software development, web design, and digital transformation. Get a free consultation today!"
+        keywords="contact trustique assist, free consultation, software development contact, AI solutions contact"
+        url="https://trustiqueassist.com/contact"
+      />
+      <section id="contact" className="section-shell">
       <div className="px-4 sm:px-6 lg:px-8">
         <motion.div 
           className="text-center mb-16"
@@ -135,7 +143,7 @@ export default function Contact() {
                 </motion.div>
                 <div>
                   <h3 className="font-bold text-text-white mb-1">Email Us</h3>
-                  <p className="text-text-muted">Info@trustiqueassist.in</p>
+                  <p className="text-text-muted">Info@trustiqueassist.com</p>
                 </div>
               </div>
             </div>
@@ -347,5 +355,6 @@ export default function Contact() {
         </div>
       </div>
     </section>
+    </>
   );
 }
