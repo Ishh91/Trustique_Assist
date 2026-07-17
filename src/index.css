@@ -8,13 +8,21 @@
   }
 
   body {
-    @apply antialiased;
+    @apply antialiased bg-bg-main text-text-white;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply tracking-tight text-text-white;
+  }
+
+  p {
+    @apply text-text-muted;
   }
 }
 
 @layer utilities {
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#0056D2] to-[#00FF88];
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-gradient;
   }
 
   .animate-float {
@@ -35,33 +43,33 @@
 
   /* Brand utilities */
   .bg-brand {
-    background-color: #0056D2;
+    background-color: #00C8D7;
   }
   .text-brand {
-    color: #0056D2;
+    color: #00C8D7;
   }
   .bg-grey {
-    background-color: #E5E5E5;
+    background-color: #101820;
   }
   .border-grey {
-    border-color: #E5E5E5;
+    border-color: rgba(255,255,255,0.08);
   }
   .bg-accent {
-    background-color: #00FF88;
+    background-color: #43E8FF;
   }
   .text-accent {
-    color: #00FF88;
+    color: #43E8FF;
   }
   .brand-gradient-bg {
-    background-image: linear-gradient(90deg, #0056D2, #00FF88);
+    background-image: linear-gradient(135deg, #00C8D7, #43E8FF);
   }
   .brand-gradient-soft {
-    background-image: linear-gradient(135deg, rgba(0,86,210,0.08), rgba(0,255,136,0.08));
+    background-image: linear-gradient(135deg, rgba(0,200,215,0.08), rgba(67,232,255,0.08));
   }
   .bg-grid {
     background-image: 
-      linear-gradient(rgba(229, 229, 229, 0.25) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(229, 229, 229, 0.25) 1px, transparent 1px);
+      linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
     background-size: 40px 40px, 40px 40px;
     background-position: 0 0, 0 0;
     background-attachment: fixed;
@@ -79,15 +87,15 @@
   }
   .bg-dots-tech {
     background-image:
-      radial-gradient(circle at 1px 1px, rgba(0,86,210,0.18) 1px, transparent 1px),
-      radial-gradient(circle at 1px 1px, rgba(0,255,136,0.12) 1px, transparent 1px);
+      radial-gradient(circle at 1px 1px, rgba(0,200,215,0.18) 1px, transparent 1px),
+      radial-gradient(circle at 1px 1px, rgba(67,232,255,0.12) 1px, transparent 1px);
     background-size: 24px 24px, 24px 24px;
     background-position: 0 0, 12px 12px;
     background-attachment: fixed;
   }
 
   .bg-lines-tech {
-    background-image: linear-gradient(135deg, rgba(0,86,210,0.06) 25%, transparent 25%, transparent 50%, rgba(0,86,210,0.06) 50%, rgba(0,86,210,0.06) 75%, transparent 75%, transparent);
+    background-image: linear-gradient(135deg, rgba(0,200,215,0.06) 25%, transparent 25%, transparent 50%, rgba(0,200,215,0.06) 50%, rgba(0,200,215,0.06) 75%, transparent 75%, transparent);
     background-size: 24px 24px;
     background-attachment: fixed;
   }
@@ -157,22 +165,46 @@
 
 .gradient-border {
   position: relative;
-  background: linear-gradient(white, white) padding-box,
-              linear-gradient(to right, #0056D2, #00FF88) border-box;
+  background: linear-gradient(#0D0D0D, #0D0D0D) padding-box,
+              linear-gradient(to right, #00C8D7, #43E8FF) border-box;
   border: 2px solid transparent;
 }
 
 @layer components {
   .brand-gradient-bg {
-    @apply bg-gradient-to-r from-[#0056D2] to-[#00FF88];
+    @apply bg-gradient-to-r from-primary to-primary-gradient;
   }
   
   .brand-gradient-soft {
-    @apply bg-gradient-to-r from-[#0056D2]/10 to-[#00FF88]/10;
+    @apply bg-gradient-to-r from-primary/10 to-primary-gradient/10;
   }
   
   .text-gradient {
-    @apply bg-gradient-to-r from-[#0056D2] to-[#00FF88] bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-primary to-primary-gradient bg-clip-text text-transparent;
+  }
+
+  .section-shell {
+    @apply py-16 md:py-20;
+  }
+
+  .section-heading {
+    @apply text-3xl md:text-4xl font-bold text-text-white;
+  }
+
+  .section-subheading {
+    @apply mt-3 text-base md:text-lg text-text-muted max-w-2xl mx-auto;
+  }
+
+  .surface-card {
+    @apply bg-bg-card/95 rounded-2xl border border-border-subtle shadow-sm;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-primary-gradient text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-primary/30;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 bg-bg-card text-text-white border border-border-subtle px-6 py-3 rounded-xl font-semibold transition-all duration-200 hover:border-primary hover:text-primary hover:shadow-md;
   }
 }
 
@@ -187,14 +219,14 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #050505;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #0056D2, #00FF88);
+  background: linear-gradient(to bottom, #00C8D7, #43E8FF);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(to bottom, #0044a8, #00cc6a);
+  background: linear-gradient(to bottom, #0099A6, #35B8D9);
 }

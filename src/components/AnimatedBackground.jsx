@@ -1,10 +1,11 @@
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
 
 // Particle System Background
 const ParticleBackground = () => {
   const canvasRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -27,6 +28,8 @@ const ParticleBackground = () => {
     const ctx = canvas.getContext('2d');
     canvas.width = dimensions.width;
     canvas.height = dimensions.height;
+
+    const isMobile = dimensions.width <= 768 || prefersReducedMotion;
 
     class Particle {
       constructor() {
@@ -63,7 +66,8 @@ const ParticleBackground = () => {
     }
 
     const particles = [];
-    const particleCount = Math.min(80, Math.floor((dimensions.width * dimensions.height) / 15000));
+    const baseCount = Math.min(80, Math.floor((dimensions.width * dimensions.height) / 15000));
+    const particleCount = isMobile ? Math.min(20, Math.floor(baseCount / 3)) : baseCount;
 
     for (let i = 0; i < particleCount; i++) {
       particles.push(new Particle());
@@ -89,6 +93,7 @@ const ParticleBackground = () => {
     };
 
     let animationFrameId;
+    let frameSkip = 0;
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -97,7 +102,12 @@ const ParticleBackground = () => {
         particle.draw();
       });
 
-      connectParticles();
+      // Avoid O(n^2) line drawing on mobile/reduced motion
+      if (!isMobile) {
+        // Only connect particles every other frame to reduce work
+        if (frameSkip % 2 === 0) connectParticles();
+        frameSkip = (frameSkip + 1) % 2;
+      }
       animationFrameId = requestAnimationFrame(animate);
     };
 
@@ -278,10 +288,20 @@ const HexagonBackground = () => {
 
 // Main Background Component
 export const AnimatedBackground = ({ type = "combined" }) => {
+  const prefersReducedMotion = useReducedMotion();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const compute = () => setIsMobile(window.innerWidth <= 768);
+    compute();
+    window.addEventListener('resize', compute);
+    return () => window.removeEventListener('resize', compute);
+  }, []);
+
   const backgrounds = {
     particles: <ParticleBackground />,
     gradient: <GradientMeshBackground />,
-    shapes: <FloatingShapesBackground />,
+    shapes: <FloatingShapesBackground />, 
     waves: <WaveBackground />,
     hexagons: <HexagonBackground />,
     combined: (
@@ -293,11 +313,14 @@ export const AnimatedBackground = ({ type = "combined" }) => {
     )
   };
 
+  const typeToRender = (isMobile || prefersReducedMotion) ? 'gradient' : type;
+
   return (
     <div className="fixed inset-0 -z-10 overflow-hidden">
-      {backgrounds[type]}
+      {backgrounds[typeToRender]}
       
       {/* Ambient light orbs */}
+      {!(isMobile || prefersReducedMotion) && (
       <motion.div
         className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#0056D2]/10 rounded-full blur-3xl"
         animate={{
@@ -309,7 +332,8 @@ export const AnimatedBackground = ({ type = "combined" }) => {
           repeat: Infinity,
           ease: "easeInOut"
         }}
-      />
+      />)}
+      {!(isMobile || prefersReducedMotion) && (
       <motion.div
         className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#00FF88]/10 rounded-full blur-3xl"
         animate={{
@@ -322,7 +346,7 @@ export const AnimatedBackground = ({ type = "combined" }) => {
           ease: "easeInOut",
           delay: 2
         }}
-      />
+      />)}
     </div>
   );
 };

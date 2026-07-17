@@ -3,6 +3,16 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      colors: {
+        primary: '#00C8D7',
+        'primary-gradient': '#43E8FF',
+        'bg-main': '#050505',
+        'bg-secondary': '#101820',
+        'bg-card': '#0D0D0D',
+        'border-subtle': 'rgba(255,255,255,0.08)',
+        'text-white': '#F5F7F8',
+        'text-muted': '#8A9499'
+      },
       backdropBlur: {
         xs: '2px',
       },

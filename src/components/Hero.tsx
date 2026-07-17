@@ -1,481 +1,557 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles, Code, Database, Shield, Cloud, Cpu, Server } from 'lucide-react';
+import { ArrowRight, Sparkles, Cloud, Code, Smartphone, Share2, Layers } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import LiquidEther from './liquid';
+import logo from '../img/logo.png';
+
+const orbitStyles = `
+  .orbit-stage {
+    position: relative;
+    height: 680px;
+    width: 680px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 1024px) {
+    .orbit-stage {
+      height: 560px;
+      width: 560px;
+    }
+    .orbit-radius {
+      --orbit-radius: 180px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .orbit-stage {
+      height: 480px;
+      width: 480px;
+      transform: scale(0.85);
+    }
+    .orbit-radius {
+      --orbit-radius: 150px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .orbit-stage {
+      height: 400px;
+      width: 400px;
+      transform: scale(0.75);
+    }
+    .orbit-radius {
+      --orbit-radius: 120px;
+    }
+  }
+
+  .orbit-stage {
+    --orbit-radius: 220px;
+  }
+
+  /* Orbit Rings */
+  .orbit-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border: 1px solid rgba(0, 200, 215, 0.12);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .or1 {
+    width: 260px;
+    height: 260px;
+    animation: ringspin 25s linear infinite;
+  }
+
+  .or2 {
+    width: 380px;
+    height: 380px;
+    animation: ringspin 40s linear infinite reverse;
+  }
+
+  .or3 {
+    width: 500px;
+    height: 500px;
+    animation: ringspin 55s linear infinite;
+    border-color: rgba(0, 200, 215, 0.06);
+  }
+
+  @keyframes ringspin {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  /* Ping Effects */
+  .ping {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 12px;
+    height: 12px;
+    margin: -6px 0 0 -6px;
+    border: 1px solid rgba(67, 232, 255, 0.4);
+    border-radius: 50%;
+    animation: pingOut 4s ease-out infinite;
+    pointer-events: none;
+  }
+
+  .ping.p2 {
+    animation-delay: 1.3s;
+  }
+
+  .ping.p3 {
+    animation-delay: 2.6s;
+  }
+
+  @keyframes pingOut {
+    0% {
+      width: 12px;
+      height: 12px;
+      margin: -6px 0 0 -6px;
+      opacity: 0.9;
+      border-color: rgba(67, 232, 255, 0.6);
+    }
+    100% {
+      width: 400px;
+      height: 400px;
+      margin: -200px 0 0 -200px;
+      opacity: 0;
+      border-color: rgba(67, 232, 255, 0);
+    }
+  }
+
+  /* Core */
+  .orbit-core {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .core-frame {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: coreFloat 5s ease-in-out infinite;
+  }
+
+  @keyframes coreFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .core-frame img {
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 30px rgba(0, 200, 215, 0.4));
+    position: relative;
+    z-index: 2;
+  }
+
+  .core-glow {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 160px;
+    height: 50px;
+    background: radial-gradient(ellipse, rgba(0, 200, 215, 0.4), transparent 70%);
+    filter: blur(6px);
+    animation: coreGlow 3s ease-in-out infinite;
+    z-index: 0;
+  }
+
+  @keyframes coreGlow {
+    0%, 100% {
+      opacity: 0.5;
+      transform: translateX(-50%) scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: translateX(-50%) scale(1.2);
+    }
+  }
+
+  /* Service Cards - Proper Orbit Implementation */
+  .orbit-item {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: center center;
+    will-change: transform;
+  }
+
+  .service-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(13, 13, 13, 0.92);
+    border: 1px solid rgba(0, 200, 215, 0.25);
+    padding: 10px 16px;
+    border-radius: 12px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+    cursor: default;
+    white-space: nowrap;
+    transform: translate(-50%, -50%);
+  }
+
+  .service-card:hover {
+    border-color: rgba(67, 232, 255, 0.8);
+    box-shadow: 0 12px 48px rgba(0, 200, 215, 0.25);
+    transform: translate(-50%, -50%) scale(1.08);
+    z-index: 20;
+  }
+
+  .service-card svg {
+    width: 18px;
+    height: 18px;
+    stroke: #43E8FF;
+    flex-shrink: 0;
+  }
+
+  .service-card span {
+    color: #F5F7F8;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.3px;
+  }
+
+  /* Individual Orbit Animations - Reduced Radius */
+  .orbit-item-1 { animation: orbit1 30s linear infinite; }
+  .orbit-item-2 { animation: orbit2 30s linear infinite; }
+  .orbit-item-3 { animation: orbit3 30s linear infinite; }
+  .orbit-item-4 { animation: orbit4 30s linear infinite; }
+  .orbit-item-5 { animation: orbit5 30s linear infinite; }
+  .orbit-item-6 { animation: orbit6 30s linear infinite; }
+
+  /* Each item starts at a different position on the orbit */
+  @keyframes orbit1 {
+    0% { transform: rotate(0deg) translateX(var(--orbit-radius, 220px)) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(var(--orbit-radius, 220px)) rotate(-360deg); }
+  }
+  
+  @keyframes orbit2 {
+    0% { transform: rotate(60deg) translateX(var(--orbit-radius, 220px)) rotate(-60deg); }
+    100% { transform: rotate(420deg) translateX(var(--orbit-radius, 220px)) rotate(-420deg); }
+  }
+  
+  @keyframes orbit3 {
+    0% { transform: rotate(120deg) translateX(var(--orbit-radius, 220px)) rotate(-120deg); }
+    100% { transform: rotate(480deg) translateX(var(--orbit-radius, 220px)) rotate(-480deg); }
+  }
+  
+  @keyframes orbit4 {
+    0% { transform: rotate(180deg) translateX(var(--orbit-radius, 220px)) rotate(-180deg); }
+    100% { transform: rotate(540deg) translateX(var(--orbit-radius, 220px)) rotate(-540deg); }
+  }
+  
+  @keyframes orbit5 {
+    0% { transform: rotate(240deg) translateX(var(--orbit-radius, 220px)) rotate(-240deg); }
+    100% { transform: rotate(600deg) translateX(var(--orbit-radius, 220px)) rotate(-600deg); }
+  }
+  
+  @keyframes orbit6 {
+    0% { transform: rotate(300deg) translateX(var(--orbit-radius, 220px)) rotate(-300deg); }
+    100% { transform: rotate(660deg) translateX(var(--orbit-radius, 220px)) rotate(-660deg); }
+  }
+
+  /* Responsive orbit radius - Reduced */
+  @media (max-width: 1024px) {
+    .orbit-item-1 { --orbit-radius: 180px; }
+    .orbit-item-2 { --orbit-radius: 180px; }
+    .orbit-item-3 { --orbit-radius: 180px; }
+    .orbit-item-4 { --orbit-radius: 180px; }
+    .orbit-item-5 { --orbit-radius: 180px; }
+    .orbit-item-6 { --orbit-radius: 180px; }
+  }
+
+  @media (max-width: 768px) {
+    .orbit-item-1 { --orbit-radius: 150px; }
+    .orbit-item-2 { --orbit-radius: 150px; }
+    .orbit-item-3 { --orbit-radius: 150px; }
+    .orbit-item-4 { --orbit-radius: 150px; }
+    .orbit-item-5 { --orbit-radius: 150px; }
+    .orbit-item-6 { --orbit-radius: 150px; }
+  }
+
+  @media (max-width: 560px) {
+    .orbit-item-1 { --orbit-radius: 120px; }
+    .orbit-item-2 { --orbit-radius: 120px; }
+    .orbit-item-3 { --orbit-radius: 120px; }
+    .orbit-item-4 { --orbit-radius: 120px; }
+    .orbit-item-5 { --orbit-radius: 120px; }
+    .orbit-item-6 { --orbit-radius: 120px; }
+  }
+`;
 
 // Animation variants
 const fadeInUp = {
-  initial: { opacity: 0, y: 60 },
+  initial: { opacity: 0, y: 30 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }
+  transition: { duration: 0.6, ease: "easeOut" }
 };
 
 const staggerContainer = {
   animate: {
     transition: {
-      staggerChildren: 0.15
+      staggerChildren: 0.1
     }
   }
-};
-
-const floatAnimation = {
-  animate: {
-    y: [-20, 20, -20],
-    rotate: [0, 5, 0],
-    transition: {
-      duration: 6,
-      repeat: Infinity,
-      ease: "easeInOut"
-    }
-  }
-};
-
-const bounceAnimation = {
-  animate: {
-    y: [0, -15, 0],
-    transition: {
-      duration: 3,
-      repeat: Infinity,
-      ease: "easeInOut"
-    }
-  }
-};
-
-const spinAnimation = {
-  animate: {
-    rotate: 360,
-    transition: {
-      duration: 20,
-      repeat: Infinity,
-      ease: "linear"
-    }
-  }
-};
-
-const scaleIn = {
-  initial: { opacity: 0, scale: 0.8 },
-  animate: { opacity: 1, scale: 1 },
-  transition: { duration: 0.6, ease: "backOut" }
-};
-
-// Particle background component
-const AnimatedBackground = () => {
-  const particles = Array.from({ length: 50 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: Math.random() * 4 + 1,
-    duration: Math.random() * 20 + 10,
-    delay: Math.random() * 5
-  }));
-
-  return (
-    <div className="absolute inset-0 overflow-hidden">
-      {/* Animated gradient mesh */}
-      <motion.div
-        className="absolute inset-0 opacity-30"
-        animate={{
-          background: [
-            'radial-gradient(circle at 20% 30%, rgba(0, 86, 210, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(0, 255, 136, 0.3) 0%, transparent 50%)',
-            'radial-gradient(circle at 40% 20%, rgba(0, 86, 210, 0.4) 0%, transparent 50%), radial-gradient(circle at 60% 80%, rgba(0, 255, 136, 0.4) 0%, transparent 50%)',
-            'radial-gradient(circle at 60% 30%, rgba(0, 86, 210, 0.3) 0%, transparent 50%), radial-gradient(circle at 40% 70%, rgba(0, 255, 136, 0.3) 0%, transparent 50%)',
-            'radial-gradient(circle at 20% 30%, rgba(0, 86, 210, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(0, 255, 136, 0.3) 0%, transparent 50%)'
-          ]
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
-
-      {/* Floating particles */}
-      {particles.map((particle) => (
-        <motion.div
-          key={particle.id}
-          className="absolute rounded-full bg-gradient-to-r from-[#0056D2] to-[#00FF88]"
-          style={{
-            left: `${particle.x}%`,
-            top: `${particle.y}%`,
-            width: `${particle.size}px`,
-            height: `${particle.size}px`,
-            opacity: Math.random() * 0.6 + 0.2
-          }}
-          animate={{
-            x: [0, Math.random() * 100 - 50, 0],
-            y: [0, Math.random() * 100 - 50, 0],
-            scale: [1, 1.5, 1],
-            opacity: [0.3, 0.8, 0.3]
-          }}
-          transition={{
-            duration: particle.duration,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: particle.delay
-          }}
-        />
-      ))}
-
-      {/* Animated grid lines */}
-      <motion.div
-        className="absolute inset-0 opacity-[0.03]"
-        animate={{
-          backgroundPosition: ['0px 0px', '100px 100px', '0px 0px']
-        }}
-        transition={{
-          duration: 20,
-          repeat: Infinity,
-          ease: "linear"
-        }}
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(0, 86, 210, 0.5) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0, 86, 210, 0.5) 1px, transparent 1px)
-          `,
-          backgroundSize: '50px 50px'
-        }}
-      />
-
-      {/* Pulsing orbs */}
-      <motion.div
-        className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-[#0056D2] to-[#00FF88] rounded-full blur-3xl opacity-20"
-        animate={{
-          scale: [1, 1.3, 1],
-          opacity: [0.2, 0.4, 0.2]
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
-      <motion.div
-        className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-[#00FF88] to-[#0056D2] rounded-full blur-3xl opacity-20"
-        animate={{
-          scale: [1.3, 1, 1.3],
-          opacity: [0.3, 0.1, 0.3]
-        }}
-        transition={{
-          duration: 6,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 2
-        }}
-      />
-
-      {/* Floating tech icons */}
-      <motion.div
-        className="absolute top-20 left-10"
-        variants={bounceAnimation}
-        animate="animate"
-      >
-        <Code size={32} className="text-[#0056D2]/30" />
-      </motion.div>
-      
-      <motion.div
-        className="absolute top-40 right-20"
-        animate={{
-          scale: [1, 1.1, 1],
-          opacity: [0.3, 0.5, 0.3],
-          rotate: [0, 5, 0]
-        }}
-        transition={{
-          duration: 4,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 1
-        }}
-      >
-        <Database size={40} className="text-[#00FF88]/30" />
-      </motion.div>
-      
-      <motion.div
-        className="absolute bottom-40 left-20"
-        variants={spinAnimation}
-        animate="animate"
-      >
-        <Cpu size={36} className="text-[#0056D2]/25" />
-      </motion.div>
-      
-      <motion.div
-        className="absolute bottom-20 right-32"
-        variants={bounceAnimation}
-        animate="animate"
-        transition={{ delay: 0.5 }}
-      >
-        <Cloud size={44} className="text-[#00FF88]/25" />
-      </motion.div>
-
-      {/* Animated code snippets */}
-      <motion.div
-        className="absolute top-1/3 left-16"
-        variants={floatAnimation}
-        animate="animate"
-      >
-        <div className="text-xs font-mono text-[#0056D2]/30 bg-white/20 px-2 py-1 rounded backdrop-blur-sm border border-white/10">
-          &lt;AI Powered /&gt;
-        </div>
-      </motion.div>
-      
-      <motion.div
-        className="absolute bottom-1/3 right-20"
-        animate={{
-          y: [-20, 20, -20],
-          rotate: [0, 5, 0],
-          transition: {
-            duration: 6,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }
-        }}
-        variants={floatAnimation}
-        transition={{ delay: 3 }}
-      >
-        <div className="text-xs font-mono text-[#00FF88]/30 bg-white/20 px-2 py-1 rounded backdrop-blur-sm border border-white/10">
-          function innovate()
-        </div>
-      </motion.div>
-      
-      <motion.div
-        className="absolute top-1/2 right-16"
-        variants={floatAnimation}
-        animate="animate"
-        transition={{ delay: 1.5 }}
-      >
-        <div className="text-xs font-mono text-[#0056D2]/30 bg-white/20 px-2 py-1 rounded backdrop-blur-sm border border-white/10">
-          .automate-workflow
-        </div>
-      </motion.div>
-      
-      <motion.div
-        className="absolute bottom-1/2 left-32"
-        variants={floatAnimation}
-        animate="animate"
-        transition={{ delay: 2.5 }}
-      >
-        <div className="text-xs font-mono text-[#00FF88]/30 bg-white/20 px-2 py-1 rounded backdrop-blur-sm border border-white/10">
-          secureSystem()
-        </div>
-      </motion.div>
-
-      {/* Animated connection lines */}
-      <svg className="absolute inset-0 w-full h-full opacity-10">
-        <motion.path
-          d="M100,100 C300,50 500,150 700,100"
-          stroke="url(#gradient)"
-          strokeWidth="2"
-          fill="none"
-          animate={{
-            pathLength: [0, 1, 0],
-            opacity: [0, 1, 0]
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        <motion.path
-          d="M200,300 C400,250 600,350 800,300"
-          stroke="url(#gradient)"
-          strokeWidth="2"
-          fill="none"
-          animate={{
-            pathLength: [0, 1, 0],
-            opacity: [0, 1, 0]
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2
-          }}
-        />
-        <defs>
-          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#0056D2" />
-            <stop offset="100%" stopColor="#00FF88" />
-          </linearGradient>
-        </defs>
-      </svg>
-
-      {/* Wave animation */}
-      <motion.div
-        className="absolute bottom-0 left-0 right-0 h-32 opacity-10"
-        animate={{
-          background: [
-            'linear-gradient(90deg, transparent, #0056D2, transparent)',
-            'linear-gradient(90deg, transparent, #00FF88, transparent)',
-            'linear-gradient(90deg, transparent, #0056D2, transparent)'
-          ]
-        }}
-        transition={{
-          duration: 6,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
-    </div>
-  );
 };
 
 export default function Hero() {
+  const [isMobile, setIsMobile] = useState(false);
+  const [animationsReady, setAnimationsReady] = useState(false);
+
+  useEffect(() => {
+    const checkDevice = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+    
+    const timer = setTimeout(() => setAnimationsReady(true), 300);
+    
+    return () => {
+      window.removeEventListener('resize', checkDevice);
+      clearTimeout(timer);
+    };
+  }, []);
+
+  const serviceItems = [
+    { icon: Cloud, label: 'Cloud Solutions', className: 'orbit-item-1' },
+    { icon: Code, label: 'AI & Automation', className: 'orbit-item-2' },
+    { icon: Share2, label: 'Digital Marketing', className: 'orbit-item-3' },
+    { icon: Layers, label: 'Blockchain', className: 'orbit-item-4' },
+    { icon: Code, label: 'Web Development', className: 'orbit-item-5' },
+    { icon: Smartphone, label: 'Mobile Apps', className: 'orbit-item-6' }
+  ];
+
   return (
     <section
-      id="home"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100"
+      id="hero"
+      className="relative min-h-screen flex items-center overflow-hidden bg-bg-main"
     >
-      {/* Animated Background */}
-      <AnimatedBackground />
+      <style>{orbitStyles}</style>
+      
+      {/* Background Effect */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <LiquidEther 
+          colors={['#00C8D7', '#43E8FF', '#007A87']} 
+          mouseForce={20} 
+          cursorSize={100} 
+          isViscous 
+          viscous={30} 
+          iterationsViscous={32} 
+          iterationsPoisson={32} 
+          resolution={0.5} 
+          isBounce={false} 
+          autoDemo 
+          autoSpeed={0.5} 
+          autoIntensity={2.2} 
+          takeoverDuration={0.25} 
+          autoResumeDelay={3000} 
+          autoRampDuration={0.6} 
+        />
+      </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center z-10">
-        <motion.div
-          variants={staggerContainer}
-          initial="initial"
-          animate="animate"
-        >
-          {/* Badge */}
-          <motion.div
-            variants={fadeInUp}
-            className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm text-[#0056D2] px-4 py-2 rounded-full mb-6 border border-white/20 shadow-lg"
-            whileHover={{ 
-              scale: 1.05,
-              boxShadow: "0 20px 40px rgba(0, 86, 210, 0.1)"
-            }}
-            transition={{ duration: 0.3 }}
-          >
+      <div className="relative px-4 sm:px-6 lg:px-8 py-16 md:py-20 z-10 w-full">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-12 max-w-7xl mx-auto">
+          
+          {/* Left Content */}
+          <div className="flex-1 text-center lg:text-left lg:pr-8">
             <motion.div
-              animate={{ rotate: [0, 180, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
+              variants={staggerContainer}
+              initial="initial"
+              animate={animationsReady ? "animate" : "initial"}
             >
-              <Sparkles size={16} />
-            </motion.div>
-            <span className="text-sm font-medium">Digital Solutions for Modern Business</span>
-          </motion.div>
-
-          {/* Main Heading */}
-          <motion.h1
-            variants={fadeInUp}
-            className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight"
-          >
-            Transform Your Business
-            <br />
-            <motion.span 
-              className="text-gradient bg-gradient-to-r from-[#0056D2] to-[#00FF88] bg-clip-text text-transparent"
-              animate={{
-                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-              }}
-              transition={{
-                duration: 5,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              style={{
-                backgroundSize: '200% 200%'
-              }}
-            >
-              With Trustique Assist
-            </motion.span>
-          </motion.h1>
-
-          {/* Description */}
-          <motion.p
-            variants={fadeInUp}
-            className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed"
-          >
-            We blend innovation in software with strong security expertise. We build AI-powered ERP & CRM systems, smart websites, and intelligent apps that automate workflows, boost efficiency, and accelerate digital growth.
-          </motion.p>
-
-          {/* Feature Tags */}
-          <motion.div
-            variants={staggerContainer}
-            className="flex flex-wrap gap-3 justify-center mb-8"
-          >
-            {[
-              { icon: Code, text: "Smart Software & AI", delay: 0.1 },
-              { icon: Shield, text: "Integrated Security Solutions", delay: 0.2 },
-              { icon: Database, text: "Facility Management", delay: 0.3 }
-            ].map((item, index) => {
-              const Icon = item.icon;
-              return (
-                <motion.span
-                  key={item.text}
-                  variants={scaleIn}
-                  className="px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm text-[#0056D2] border border-white/20 shadow-lg flex items-center gap-2"
-                  whileHover={{ 
-                    scale: 1.05,
-                    y: -2,
-                    boxShadow: "0 15px 30px rgba(0, 86, 210, 0.15)"
-                  }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <Icon size={16} />
-                  {item.text}
-                </motion.span>
-              );
-            })}
-          </motion.div>
-
-          {/* CTA Buttons */}
-          <motion.div
-            variants={fadeInUp}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-          >
-            <Link to="/services" className="group relative overflow-hidden">
+              {/* Badge */}
               <motion.div
-                className="brand-gradient-bg text-white px-8 py-4 rounded-full flex items-center gap-2"
+                variants={fadeInUp}
+                className="inline-flex items-center gap-2 bg-bg-card/90 backdrop-blur-sm text-primary px-3 py-1.5 md:px-4 md:py-2 rounded-full mb-4 md:mb-6 border border-border-subtle shadow-lg text-xs md:text-sm"
                 whileHover={{ 
-                  scale: 1.05,
-                  boxShadow: "0 20px 40px rgba(0, 86, 210, 0.3)"
+                  scale: isMobile ? 1 : 1.05,
+                  y: -2,
+                  boxShadow: "0 20px 40px rgba(0, 200, 215, 0.1)",
                 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ duration: 0.3 }}
               >
-                <span>View Solutions</span>
                 <motion.div
-                  animate={{ x: [0, 5, 0] }}
+                  animate={{ rotate: isMobile ? 0 : [0, 180, 0] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  <ArrowRight size={20} />
+                  <Sparkles size={isMobile ? 12 : 16} className="text-primary" />
                 </motion.div>
+                <span className="font-medium">Trust · Integrity · Impact</span>
               </motion.div>
-            </Link>
-            
-            <Link to="/contact">
-              <motion.div
-                className="px-8 py-4 rounded-full border-2 border-gray-300 text-gray-700 hover:border-[#0056D2] hover:text-[#0056D2] bg-white/80 backdrop-blur-sm"
-                whileHover={{ 
-                  scale: 1.05,
-                  borderColor: "#0056D2",
-                  color: "#0056D2",
-                  boxShadow: "0 15px 30px rgba(0, 86, 210, 0.15)"
-                }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ duration: 0.3 }}
+
+              {/* Heading */}
+              <motion.h1
+                variants={fadeInUp}
+                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-text-white mb-4 md:mb-6 leading-tight"
               >
-                Contact Us
+                Engineering Ideas
+                <br className="hidden sm:block" />
+                <motion.span 
+                  className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-gradient"
+                  animate={animationsReady ? {
+                    backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                  } : {}}
+                  transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  style={{ backgroundSize: '200% 200%' }}
+                >
+                  into Digital Reality.
+                </motion.span>
+              </motion.h1>
+
+              {/* Description */}
+              <motion.p
+                variants={fadeInUp}
+                className="text-base sm:text-lg md:text-xl text-text-muted mb-6 md:mb-8 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
+              >
+                From <strong className="text-text-white">Startup Registration</strong> to <strong className="text-text-white">AI Products</strong>.<br className="hidden sm:block" />
+                From <strong className="text-text-white">Websites</strong> to <strong className="text-text-white">Enterprise Software</strong>.<br className="hidden sm:block" />
+                From <strong className="text-text-white">Branding</strong> to <strong className="text-text-white">Growth</strong>.<br />
+                <span className="text-primary font-semibold">We build everything your business needs.</span>
+              </motion.p>
+
+              {/* CTA Buttons */}
+              <motion.div
+                variants={fadeInUp}
+                className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center lg:justify-start items-center"
+              >
+                <Link to="/contact" className="w-full sm:w-auto">
+                  <motion.div
+                    className="bg-gradient-to-r from-primary to-primary-gradient text-white px-6 py-3 md:px-8 md:py-4 rounded-full flex items-center gap-2 font-semibold justify-center text-sm md:text-base w-full"
+                    whileHover={{ 
+                      scale: isMobile ? 1 : 1.05,
+                      y: -2,
+                      boxShadow: "0 20px 40px rgba(0, 200, 215, 0.4)",
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <span>Start Your Project</span>
+                    <motion.div
+                      animate={isMobile ? {} : { x: [0, 5, 0] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <ArrowRight size={isMobile ? 16 : 20} />
+                    </motion.div>
+                  </motion.div>
+                </Link>
+                
+                <Link to="/services" className="w-full sm:w-auto">
+                  <motion.div
+                    className="px-6 py-3 md:px-8 md:py-4 rounded-full border-2 border-border-subtle text-text-white hover:border-primary hover:text-primary bg-bg-card/90 backdrop-blur-sm font-semibold text-center text-sm md:text-base w-full"
+                    whileHover={{ 
+                      scale: isMobile ? 1 : 1.05,
+                      y: -2,
+                      borderColor: "#00C8D7",
+                      color: "#00C8D7",
+                      boxShadow: "0 15px 30px rgba(0, 200, 215, 0.15)",
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Explore Services
+                  </motion.div>
+                </Link>
               </motion.div>
-            </Link>
-          </motion.div>
-        </motion.div>
+            </motion.div>
+          </div>
+
+          {/* Right Side - Orbit System */}
+          <div className="flex-1 relative hidden lg:flex items-center justify-center">
+            <div className="orbit-stage">
+              {/* Ping Effects */}
+              <div className="ping"></div>
+              <div className="ping p2"></div>
+              <div className="ping p3"></div>
+
+              {/* Orbit Rings - Reduced sizes */}
+              <div className="orbit-ring or1"></div>
+              <div className="orbit-ring or2"></div>
+              <div className="orbit-ring or3"></div>
+
+              {/* Service Cards on Orbit */}
+              {serviceItems.map((item, index) => {
+                const Icon = item.icon;
+                return (
+                  <div 
+                    key={index}
+                    className={`orbit-item ${item.className}`}
+                  >
+                    <div className="service-card">
+                      <Icon />
+                      <span>{item.label}</span>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Core Logo */}
+              <div className="orbit-core">
+                <div className="core-frame">
+                  <img src={logo} alt="Trustique Assist" />
+                  <div className="core-glow"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Scroll Indicator */}
         <motion.div
           className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2, duration: 0.8 }}
+          animate={animationsReady ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 1.5, duration: 0.8 }}
         >
           <motion.div
-            className="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center cursor-pointer"
-            animate={{ y: [0, 10, 0] }}
+            className={`border-2 border-text-muted/50 rounded-full flex justify-center cursor-pointer overflow-hidden ${
+              isMobile ? 'w-5 h-8' : 'w-6 h-10'
+            }`}
+            animate={{ y: [0, 6, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
-            whileHover={{ scale: 1.1, borderColor: "#0056D2" }}
+            whileHover={{ 
+              scale: 1.1, 
+              borderColor: "#00C8D7",
+            }}
           >
             <motion.div
-              className="w-1 h-3 bg-gray-400 rounded-full mt-2"
-              animate={{ opacity: [1, 0, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
+              className="w-full h-full bg-gradient-to-b from-primary to-primary-gradient rounded-full flex justify-center pt-1"
+              animate={{
+                background: [
+                  'linear-gradient(to bottom, #00C8D7, #43E8FF)',
+                  'linear-gradient(to bottom, #43E8FF, #00C8D7)',
+                ]
+              }}
+              transition={{ duration: 3, repeat: Infinity }}
+            >
+              <motion.div
+                className={`bg-white rounded-full ${
+                  isMobile ? 'w-1 h-2' : 'w-1.5 h-3'
+                }`}
+                animate={{ opacity: [1, 0, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+            </motion.div>
           </motion.div>
         </motion.div>
       </div>

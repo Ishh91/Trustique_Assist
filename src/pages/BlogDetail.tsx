@@ -28,7 +28,7 @@ export default function BlogDetail() {
 
   const fetchPost = async () => {
     try {
-      const apiBase = (import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:3001'));
+      const apiBase = (import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:3001/api'));
       const response = await fetch(`${apiBase}/blog/${slug}`);
       if (!response.ok) {
         throw new Error(`Post not found (${response.status})`);
@@ -51,26 +51,26 @@ export default function BlogDetail() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-        <div className="text-center text-gray-600">Loading post...</div>
+      <div className="px-4 sm:px-6 lg:px-8 py-24 bg-bg-main">
+        <div className="text-center text-text-muted">Loading post...</div>
       </div>
     );
   }
 
   if (error || !post) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-        <h2 className="text-3xl font-bold mb-6">Post not found</h2>
-        <Link to="/blog" className="text-[#0056D2]">Back to Blog</Link>
+      <div className="px-4 sm:px-6 lg:px-8 py-24 bg-bg-main">
+        <h2 className="text-3xl font-bold mb-6 text-text-white">Post not found</h2>
+        <Link to="/blog" className="text-primary">Back to Blog</Link>
       </div>
     );
   }
 
   return (
-    <section className="py-24 bg-white animate-fade-in">
+    <section className="py-24 bg-bg-main animate-fade-in">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-6 animate-slide-up">
-          <Link to="/blog" className="text-[#0056D2]">← Back to Blog</Link>
+          <Link to="/blog" className="text-primary">← Back to Blog</Link>
         </div>
         
         {post.featuredImage && (
@@ -83,15 +83,15 @@ export default function BlogDetail() {
           </div>
         )}
         
-        <div className="text-sm text-gray-500 mb-2 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+        <div className="text-sm text-text-muted mb-2 animate-slide-up" style={{ animationDelay: '0.2s' }}>
           {new Date(post.publishedAt || post.createdAt).toLocaleDateString()} • {post.author}
         </div>
         
-        <h1 className="text-4xl font-bold text-gray-900 mb-6 animate-slide-up" style={{ animationDelay: '0.3s' }}>
+        <h1 className="text-4xl font-bold text-text-white mb-6 animate-slide-up" style={{ animationDelay: '0.3s' }}>
           {post.title}
         </h1>
         
-        <article className="prose max-w-none text-gray-800 animate-slide-up" style={{ animationDelay: '0.4s' }}>
+        <article className="max-w-none text-text-muted animate-slide-up leading-8 text-lg bg-bg-card/90 border border-border-subtle rounded-2xl p-8" style={{ animationDelay: '0.4s' }}>
           {post.content.split('\n').map((paragraph, index) => (
             <p key={index} className="mb-4">
               {paragraph}
@@ -104,7 +104,7 @@ export default function BlogDetail() {
             {post.tags.map((tag, i) => (
               <span
                 key={tag}
-                className="px-3 py-1 rounded-full text-sm border border-[#E5E5E5] text-gray-600"
+                className="px-3 py-1 rounded-full text-sm border border-primary/20 text-primary bg-gradient-to-r from-primary/10 to-primary-gradient/10"
                 style={{ animationDelay: `${0.55 + i * 0.05}s` }}
               >
                 #{tag}

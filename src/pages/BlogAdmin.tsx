@@ -32,8 +32,9 @@ const BlogAdmin: React.FC = () => {
     published: false
   });
 
-  const apiBase = (import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:3001'));
+  const apiBase = (import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:3001/api'));
   const API_URL = `${apiBase}/admin/blog`;
+  const token = localStorage.getItem('adminToken');
 
   useEffect(() => {
     fetchPosts();
@@ -41,7 +42,11 @@ const BlogAdmin: React.FC = () => {
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch(API_URL);
+      const response = await fetch(API_URL, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       const data = await response.json();
       setPosts(data);
     } catch (error) {
@@ -67,6 +72,7 @@ const BlogAdmin: React.FC = () => {
         method,
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(postData),
       });
@@ -109,6 +115,9 @@ const BlogAdmin: React.FC = () => {
       try {
         const response = await fetch(`${API_URL}/${id}`, {
           method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
         });
 
         if (response.ok) {
@@ -126,6 +135,7 @@ const BlogAdmin: React.FC = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ published: !post.published }),
       });
@@ -140,7 +150,7 @@ const BlogAdmin: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex justify-between items-center">
@@ -150,7 +160,7 @@ const BlogAdmin: React.FC = () => {
             </div>
             <button
               onClick={() => setShowForm(true)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+              className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-4 py-2 rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-colors flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
               New Post
@@ -377,7 +387,7 @@ const BlogAdmin: React.FC = () => {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center gap-2"
+                    className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-md hover:from-cyan-600 hover:to-blue-600 flex items-center gap-2"
                   >
                     <Save className="w-4 h-4" />
                     {editingPost ? 'Update' : 'Create'}

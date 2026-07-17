@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Disallow admin areas
+Disallow: /admin/
+Disallow: /wp-admin/
+Disallow: /dashboard/
+
+# Sitemaps
+Sitemap: https://trustiqueassist.in/sitemap.xml
+Sitemap: https://trustiqueassist.in/sitemap-index.xml
+
+# Crawl delay
+Crawl-delay: 10

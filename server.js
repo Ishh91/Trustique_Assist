@@ -1,14 +1,42 @@
 import express from 'express';
 import cors from 'cors';
-import sqlite3 from 'sqlite3';
+import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+
+// Auth configuration
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+
+// JWT verification middleware
+const authenticateAdmin = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  
+  if (!authHeader) {
+    return res.status(401).json({ error: 'Authorization header missing' });
+  }
+  
+  const token = authHeader.split(' ')[1];
+  
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.admin = decoded;
+    next();
+  } catch (error) {
+    return res.status(401).json({ error: 'Invalid or expired token' });
+  }
+};
 const PORT = process.env.PORT || 3001;
 
 // Trust proxy for proper client IP detection
@@ -18,14 +46,15 @@ app.set('trust proxy', 1);
 app.use(cors({
   origin: function (origin, callback) {
     // Base allowed origins
-    const staticAllowed = [
-      'http://localhost:5174',
-      'http://localhost:5173',
-      'https://trustiqueassist21.netlify.app',
-      'https://*.netlify.app',
-      'https://trustiqueassist.in',
-      'https://www.trustiqueassist.in'
-    ];
+      const staticAllowed = [
+        'http://localhost:5173',
+        'http://localhost:5174',
+        'http://localhost:5175',
+        'https://trustiqueassist21.netlify.app',
+        'https://*.netlify.app',
+        'https://trustiqueassist.in',
+        'https://www.trustiqueassist.in'
+      ];
 
     // Allow adding origins via env var: CORS_ORIGINS=origin1,origin2
     const envOrigins = (process.env.CORS_ORIGINS || '')
@@ -65,66 +94,65 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Initialize SQLite database
-const dbPath = process.env.DATABASE_URL || './blog.db';
-const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    console.error('Error opening database:', err);
-  } else {
-    console.log('Connected to SQLite database');
-  }
+// Serve static files from the dist folder (for production)
+const distPath = path.join(__dirname, 'dist');
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+}
+
+// MongoDB Connection
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/trustique';
+
+mongoose.connect(MONGODB_URI)
+  .then(() => console.log('✅ Connected to MongoDB'))
+  .catch(err => console.error('❌ Error connecting to MongoDB:', err));
+
+// Mongoose Schemas & Models
+
+// Blog Post Schema
+const blogPostSchema = new mongoose.Schema({
+  id: { type: String, required: true, unique: true },
+  title: { type: String, required: true },
+  slug: { type: String, required: true, unique: true },
+  excerpt: { type: String, required: true },
+  content: { type: String, required: true },
+  featuredImage: { type: String },
+  author: { type: String, required: true },
+  tags: { type: [String], default: [] },
+  published: { type: Boolean, default: false },
+  publishedAt: { type: Date },
+}, {
+  timestamps: true
 });
 
-// Create blog posts table
-db.serialize(() => {
-  db.run(`
-    CREATE TABLE IF NOT EXISTS blog_posts (
-      id TEXT PRIMARY KEY,
-      title TEXT NOT NULL,
-      slug TEXT UNIQUE NOT NULL,
-      excerpt TEXT NOT NULL,
-      content TEXT NOT NULL,
-      featuredImage TEXT,
-      author TEXT NOT NULL,
-      tags TEXT,
-      published BOOLEAN DEFAULT 0,
-      createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
-      updatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
-      publishedAt TEXT
-    )
-  `);
+const BlogPost = mongoose.model('BlogPost', blogPostSchema);
 
-  db.run(`
-    CREATE TABLE IF NOT EXISTS testimonials (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      role TEXT NOT NULL,
-      company TEXT NOT NULL,
-      review TEXT NOT NULL,
-      project TEXT NOT NULL,
-      rating INTEGER DEFAULT 5,
-      featuredImage TEXT,
-      isActive BOOLEAN DEFAULT 1,
-      createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
-      updatedAt TEXT DEFAULT CURRENT_TIMESTAMP
-    )
-  `, () => {
-      // Seed testimonials only if the table is empty
-      db.get('SELECT COUNT(*) as count FROM testimonials', (err, row) => {
-        if (err) {
-          console.error('Error checking testimonials count:', err);
-          return;
-        }
-        
-        if (row.count === 0) {
-          console.log('Testimonials table is empty, seeding data...');
-          seedTestimonials();
-        } else {
-          console.log('Testimonials table already contains data, skipping seed.');
-        }
-      });
-  });
+// Testimonial Schema
+const testimonialSchema = new mongoose.Schema({
+  id: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
+  role: { type: String, required: true },
+  company: { type: String, required: true },
+  review: { type: String, required: true },
+  project: { type: String, required: true },
+  rating: { type: Number, default: 5 },
+  featuredImage: { type: String },
+  isActive: { type: Boolean, default: true },
+}, {
+  timestamps: true
 });
+
+const Testimonial = mongoose.model('Testimonial', testimonialSchema);
+
+// Admin Schema
+const adminSchema = new mongoose.Schema({
+  username: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+}, {
+  timestamps: true
+});
+
+const Admin = mongoose.model('Admin', adminSchema);
 
 // Helper function to generate slug
 function generateSlug(title) {
@@ -134,218 +162,256 @@ function generateSlug(title) {
     .replace(/^-|-$/g, '');
 }
 
-function seedTestimonials() {
-  fs.readFile(path.join(__dirname, 'testimonials.json'), 'utf8', (err, data) => {   
-    if (err) {
-      console.error('Error reading testimonials.json:', err);
+// Seed function to seed testimonials
+async function seedTestimonials() {
+  try {
+    const count = await Testimonial.countDocuments();
+    if (count > 0) {
+      console.log('Testimonials collection already contains data, skipping seed.');
       return;
     }
-    try {
-      const testimonials = JSON.parse(data);
-      const stmt = db.prepare(
-        `INSERT INTO testimonials (id, name, role, company, review, project, rating, featuredImage, isActive)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
-      );
-      db.serialize(() => {
-        testimonials.forEach(testimonial => {
-          const id = Date.now().toString() + Math.random().toString(36).substr(2, 9);
-          stmt.run(
-            id,
-            testimonial.name,
-            testimonial.role,
-            testimonial.company,
-            testimonial.review,
-            testimonial.project,
-            testimonial.rating,
-            testimonial.featuredImage,
-            testimonial.isActive
-          );
-        });
-        stmt.finalize();
-        console.log('Testimonials seeded successfully.');
+    
+    const filePath = path.join(__dirname, 'testimonials.json');
+    const data = fs.readFileSync(filePath, 'utf8');
+    const testimonials = JSON.parse(data);
+
+    testimonials.forEach(async (testimonial) => {
+      const id = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+      const newTestimonial = new Testimonial({
+        id,
+        ...testimonial
       });
-    } catch (parseErr) {
-      console.error('Error parsing testimonials.json:', parseErr);
-    }
-  });
+      await newTestimonial.save();
+    });
+    console.log('✅ Testimonials seeded successfully.');
+  } catch (err) {
+    console.error('❌ Error seeding testimonials:', err);
+  }
 }
+
+// Seed function to create/update admin user
+async function seedAdmin() {
+  try {
+    // Get initial admin credentials from .env or use defaults
+    const initialUsername = process.env.INITIAL_ADMIN_USERNAME || 'admin';
+    const initialPassword = process.env.INITIAL_ADMIN_PASSWORD || 'admin123';
+
+    // Check if admin exists
+    const existingAdmin = await Admin.findOne({ username: initialUsername });
+    
+    if (existingAdmin) {
+      // Verify if password matches (to avoid unnecessary updates)
+      const passwordMatches = await bcrypt.compare(initialPassword, existingAdmin.password);
+      
+      if (passwordMatches) {
+        console.log('Admin user exists and password matches, skipping seed.');
+        return;
+      }
+
+      // Update password if it doesn't match
+      const hashedPassword = await bcrypt.hash(initialPassword, 10);
+      await Admin.updateOne(
+        { username: initialUsername },
+        { password: hashedPassword }
+      );
+      console.log('✅ Admin password updated successfully!');
+      console.log('Username:', initialUsername);
+      console.log('Password:', initialPassword);
+    } else {
+      // Create new admin user
+      const hashedPassword = await bcrypt.hash(initialPassword, 10);
+      const newAdmin = new Admin({
+        username: initialUsername,
+        password: hashedPassword
+      });
+      await newAdmin.save();
+      console.log('✅ Initial admin user created successfully!');
+      console.log('Username:', initialUsername);
+      console.log('Password:', initialPassword);
+    }
+  } catch (err) {
+    console.error('❌ Error seeding admin user:', err);
+  }
+}
+
+// Seed data on connection
+mongoose.connection.once('open', () => {
+  seedTestimonials();
+  seedAdmin();
+});
 
 // Blog API Routes
 
 // Get all published blog posts
-app.get('/api/blog', (req, res) => {
-  const { page = 1, limit = 10, search = '', tag = '' } = req.query;
-  const offset = (page - 1) * limit;
-  
-  let query = 'SELECT * FROM blog_posts WHERE published = 1';
-  let params = [];
-  
-  if (search) {
-    query += ' AND (title LIKE ? OR excerpt LIKE ? OR content LIKE ?)';
-    params.push(`%${search}%`, `%${search}%`, `%${search}%`);
-  }
-  
-  if (tag) {
-    query += ' AND tags LIKE ?';
-    params.push(`%${tag}%`);
-  }
-  
-  query += ' ORDER BY publishedAt DESC LIMIT ? OFFSET ?';
-  params.push(limit, offset);
-  
-  db.all(query, params, (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
+app.get('/api/blog', async (req, res) => {
+  try {
+    const { page = 1, limit = 10, search = '', tag = '' } = req.query;
+    const offset = (page - 1) * limit;
+
+    let query = { published: true };
+
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { excerpt: { $regex: search, $options: 'i' } },
+        { content: { $regex: search, $options: 'i' } }
+      ];
     }
-    
-    // Parse tags from JSON string
-    const posts = rows.map(row => ({
-      ...row,
-      tags: row.tags ? JSON.parse(row.tags) : []
-    }));
-    
+
+    if (tag) {
+      query.tags = { $in: [tag] };
+    }
+
+    const posts = await BlogPost.find(query)
+      .sort({ publishedAt: -1 })
+      .limit(Number(limit))
+      .skip(Number(offset));
+
     res.json(posts);
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Get single blog post by slug
-app.get('/api/blog/:slug', (req, res) => {
-  const { slug } = req.params;
-  
-  db.get('SELECT * FROM blog_posts WHERE slug = ? AND published = 1', [slug], (err, row) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
+app.get('/api/blog/:slug', async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const post = await BlogPost.findOne({ slug, published: true });
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
     }
-    
-    if (!row) {
-      res.status(404).json({ error: 'Post not found' });
-      return;
-    }
-    
-    // Parse tags from JSON string
-    const post = {
-      ...row,
-      tags: row.tags ? JSON.parse(row.tags) : []
-    };
-    
     res.json(post);
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// Admin Routes (Create, Update, Delete)
+// Admin Routes (Create, Update, Delete) - Protected
 
 // Create new blog post
-app.post('/api/admin/blog', (req, res) => {
-  const { title, excerpt, content, featuredImage, author, tags = [], published = false } = req.body;
-  
-  if (!title || !excerpt || !content || !author) {
-    res.status(400).json({ error: 'Missing required fields' });
-    return;
-  }
-  
-  const slug = generateSlug(title);
-  const id = Date.now().toString();
-  const publishedAt = published ? new Date().toISOString() : null;
-  const tagsJson = JSON.stringify(tags);
-  
-  const query = `
-    INSERT INTO blog_posts (id, title, slug, excerpt, content, featuredImage, author, tags, published, publishedAt)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-  
-  db.run(query, [id, title, slug, excerpt, content, featuredImage, author, tagsJson, published, publishedAt], function(err) {
-    if (err) {
-      if (err.message.includes('UNIQUE constraint failed')) {
-        res.status(409).json({ error: 'A post with this title already exists' });
-      } else {
-        res.status(500).json({ error: err.message });
-      }
-      return;
+app.post('/api/admin/blog', authenticateAdmin, async (req, res) => {
+  try {
+    const { title, excerpt, content, featuredImage, author, tags = [], published = false } = req.body;
+
+    if (!title || !excerpt || !content || !author) {
+      return res.status(400).json({ error: 'Missing required fields' });
     }
-    
+
+    const slug = generateSlug(title);
+    const id = Date.now().toString();
+    const publishedAt = published ? new Date() : null;
+
+    const newPost = new BlogPost({
+      id,
+      title,
+      slug,
+      excerpt,
+      content,
+      featuredImage,
+      author,
+      tags,
+      published,
+      publishedAt,
+    });
+
+    await newPost.save();
+
     res.json({ id, slug, message: 'Blog post created successfully' });
-  });
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(409).json({ error: 'A post with this title already exists' });
+    }
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Update blog post
-app.put('/api/admin/blog/:id', (req, res) => {
-  const { id } = req.params;
-  const { title, excerpt, content, featuredImage, author, tags = [], published = false } = req.body;
-  
-  const slug = title ? generateSlug(title) : undefined;
-  const publishedAt = published ? new Date().toISOString() : null;
-  const tagsJson = JSON.stringify(tags);
-  
-  const updates = [];
-  const params = [];
-  
-  if (title) { updates.push('title = ?'); params.push(title); }
-  if (excerpt) { updates.push('excerpt = ?'); params.push(excerpt); }
-  if (content) { updates.push('content = ?'); params.push(content); }
-  if (featuredImage !== undefined) { updates.push('featuredImage = ?'); params.push(featuredImage); }
-  if (author) { updates.push('author = ?'); params.push(author); }
-  if (tags) { updates.push('tags = ?'); params.push(tagsJson); }
-  if (published !== undefined) { updates.push('published = ?'); params.push(published); }
-  if (slug) { updates.push('slug = ?'); params.push(slug); }
-  if (publishedAt !== undefined) { updates.push('publishedAt = ?'); params.push(publishedAt); }
-  
-  updates.push('updatedAt = CURRENT_TIMESTAMP');
-  params.push(id);
-  
-  const query = `UPDATE blog_posts SET ${updates.join(', ')} WHERE id = ?`;
-  
-  db.run(query, params, function(err) {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
+app.put('/api/admin/blog/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, excerpt, content, featuredImage, author, tags, published } = req.body;
+
+    const updateData = {};
+
+    if (title) {
+      updateData.title = title;
+      updateData.slug = generateSlug(title);
     }
-    
-    if (this.changes === 0) {
-      res.status(404).json({ error: 'Post not found' });
-      return;
+    if (excerpt) updateData.excerpt = excerpt;
+    if (content) updateData.content = content;
+    if (featuredImage !== undefined) updateData.featuredImage = featuredImage;
+    if (author) updateData.author = author;
+    if (tags) updateData.tags = tags;
+    if (published !== undefined) {
+      updateData.published = published;
+      updateData.publishedAt = published ? new Date() : null;
     }
-    
+
+    const updatedPost = await BlogPost.findOneAndUpdate(
+      { id },
+      updateData,
+      { new: true }
+    );
+
+    if (!updatedPost) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
     res.json({ message: 'Blog post updated successfully' });
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Delete blog post
-app.delete('/api/admin/blog/:id', (req, res) => {
-  const { id } = req.params;
-  
-  db.run('DELETE FROM blog_posts WHERE id = ?', [id], function(err) {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
+app.delete('/api/admin/blog/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedPost = await BlogPost.findOneAndDelete({ id });
+    if (!deletedPost) {
+      return res.status(404).json({ error: 'Post not found' });
     }
-    
-    if (this.changes === 0) {
-      res.status(404).json({ error: 'Post not found' });
-      return;
-    }
-    
     res.json({ message: 'Blog post deleted successfully' });
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Get all blog posts (admin view)
-app.get('/api/admin/blog', (req, res) => {
-  db.all('SELECT * FROM blog_posts ORDER BY createdAt DESC', (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    
-    // Parse tags from JSON string
-    const posts = rows.map(row => ({
-      ...row,
-      tags: row.tags ? JSON.parse(row.tags) : []
-    }));
-    
+app.get('/api/admin/blog', authenticateAdmin, async (req, res) => {
+  try {
+    const posts = await BlogPost.find().sort({ createdAt: -1 });
     res.json(posts);
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin login endpoint
+app.post('/api/admin/login', async (req, res) => {
+  const { username, password } = req.body;
+  
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password are required' });
+  }
+  
+  // Find admin user by username
+  const admin = await Admin.findOne({ username });
+  if (!admin) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+  
+  // Compare passwords
+  const passwordMatch = await bcrypt.compare(password, admin.password);
+  if (!passwordMatch) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+  
+  // Generate JWT token (expires in 7 days)
+  const token = jwt.sign({ userId: admin._id, role: 'admin' }, JWT_SECRET, { expiresIn: '7d' });
+  
+  res.json({ token });
 });
 
 // Health check endpoint
@@ -356,130 +422,126 @@ app.get('/health', (req, res) => {
 // Testimonials API Routes
 
 // Get all active testimonials
-app.get('/api/testimonials', (req, res) => {
-  db.all('SELECT * FROM testimonials WHERE isActive = 1 ORDER BY createdAt DESC', (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    
-    res.json(rows);
-  });
+app.get('/api/testimonials', async (req, res) => {
+  try {
+    const testimonials = await Testimonial.find({ isActive: true }).sort({ createdAt: -1 });
+    res.json(testimonials);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Get single testimonial by ID
-app.get('/api/testimonials/:id', (req, res) => {
-  const { id } = req.params;
-  
-  db.get('SELECT * FROM testimonials WHERE id = ? AND isActive = 1', [id], (err, row) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
+app.get('/api/testimonials/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const testimonial = await Testimonial.findOne({ id, isActive: true });
+    if (!testimonial) {
+      return res.status(404).json({ error: 'Testimonial not found' });
     }
-    
-    if (!row) {
-      res.status(404).json({ error: 'Testimonial not found' });
-      return;
-    }
-    
-    res.json(row);
-  });
+    res.json(testimonial);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// Admin Routes for Testimonials
+// Admin Routes for Testimonials - Protected
 
 // Create new testimonial
-app.post('/api/admin/testimonials', (req, res) => {
-  const { name, role, company, review, project, rating = 5, featuredImage } = req.body;
-  
-  if (!name || !role || !company || !review || !project) {
-    res.status(400).json({ error: 'Missing required fields' });
-    return;
-  }
-  
-  const id = Date.now().toString();
-  
-  const query = `
-    INSERT INTO testimonials (id, name, role, company, review, project, rating, featuredImage)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-  
-  db.run(query, [id, name, role, company, review, project, rating, featuredImage], function(err) {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
+app.post('/api/admin/testimonials', authenticateAdmin, async (req, res) => {
+  try {
+    const { name, role, company, review, project, rating = 5, featuredImage } = req.body;
+
+    if (!name || !role || !company || !review || !project) {
+      return res.status(400).json({ error: 'Missing required fields' });
     }
-    
+
+    const id = Date.now().toString();
+    const newTestimonial = new Testimonial({
+      id,
+      name,
+      role,
+      company,
+      review,
+      project,
+      rating,
+      featuredImage,
+    });
+    await newTestimonial.save();
+
     res.json({ id, message: 'Testimonial created successfully' });
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Update testimonial
-app.put('/api/admin/testimonials/:id', (req, res) => {
-  const { id } = req.params;
-  const { name, role, company, review, project, rating, featuredImage, isActive } = req.body;
-  
-  const updates = [];
-  const params = [];
-  
-  if (name) { updates.push('name = ?'); params.push(name); }
-  if (role) { updates.push('role = ?'); params.push(role); }
-  if (company) { updates.push('company = ?'); params.push(company); }
-  if (review) { updates.push('review = ?'); params.push(review); }
-  if (project) { updates.push('project = ?'); params.push(project); }
-  if (rating !== undefined) { updates.push('rating = ?'); params.push(rating); }
-  if (featuredImage !== undefined) { updates.push('featuredImage = ?'); params.push(featuredImage); }
-  if (isActive !== undefined) { updates.push('isActive = ?'); params.push(isActive); }
-  
-  updates.push('updatedAt = CURRENT_TIMESTAMP');
-  params.push(id);
-  
-  const query = `UPDATE testimonials SET ${updates.join(', ')} WHERE id = ?`;
-  
-  db.run(query, params, function(err) {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
+app.put('/api/admin/testimonials/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    const updatedTestimonial = await Testimonial.findOneAndUpdate(
+      { id },
+      updateData,
+      { new: true }
+    );
+
+    if (!updatedTestimonial) {
+      return res.status(404).json({ error: 'Testimonial not found' });
     }
-    
-    if (this.changes === 0) {
-      res.status(404).json({ error: 'Testimonial not found' });
-      return;
-    }
-    
+
     res.json({ message: 'Testimonial updated successfully' });
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Delete testimonial (soft delete)
-app.delete('/api/admin/testimonials/:id', (req, res) => {
-  const { id } = req.params;
-  
-  db.run('UPDATE testimonials SET isActive = 0 WHERE id = ?', [id], function(err) {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
+app.delete('/api/admin/testimonials/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedTestimonial = await Testimonial.findOneAndUpdate(
+      { id },
+      { isActive: false },
+      { new: true }
+    );
+
+    if (!updatedTestimonial) {
+      return res.status(404).json({ error: 'Testimonial not found' });
     }
-    
-    if (this.changes === 0) {
-      res.status(404).json({ error: 'Testimonial not found' });
-      return;
-    }
-    
+
     res.json({ message: 'Testimonial deleted successfully' });
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Get all testimonials (admin view)
-app.get('/api/admin/testimonials', (req, res) => {
-  db.all('SELECT * FROM testimonials ORDER BY createdAt DESC', (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
+app.get('/api/admin/testimonials', authenticateAdmin, async (req, res) => {
+  try {
+    const testimonials = await Testimonial.find().sort({ createdAt: -1 });
+    res.json(testimonials);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Catch-all middleware for client-side routing (must come after API routes)
+app.use((req, res, next) => {
+  // Only handle GET requests for non-API routes
+  if (req.method === 'GET' && !req.path.startsWith('/api')) {
+    const indexPath = path.join(distPath, 'index.html');
+    if (fs.existsSync(indexPath)) {
+      res.sendFile(indexPath);
+    } else {
+      // In development, just pass through (Vite dev server will handle it)
+      next();
     }
-    
-    res.json(rows);
-  });
+  } else {
+    // For API routes or other methods, pass to next middleware
+    next();
+  }
 });
 
 // Start server
@@ -489,4 +551,5 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`📝 Blog API available at http://localhost:${PORT}/api/blog`);
   console.log(`⭐ Testimonials API available at http://localhost:${PORT}/api/testimonials`);
   console.log(`🏥 Health check available at http://localhost:${PORT}/health`);
+  console.log(`📄 Frontend (production build): http://localhost:${PORT}`);
 });

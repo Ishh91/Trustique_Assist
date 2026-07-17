@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Mail, Phone, MapPin, Send, MessageCircle, Clock, Users, Shield } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -76,31 +77,46 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="py-24 bg-gradient-to-br from-gray-50 to-white animate-fade-in">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 animate-slide-up">
+    <section id="contact" className="section-shell">
+      <div className="px-4 sm:px-6 lg:px-8">
+        <motion.div 
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <h2 className="section-heading mb-4 animate-slide-up">
             Let's Start Your <span className="text-gradient">Project</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="section-subheading">
             Ready to transform your business? Get in touch and let's build something amazing together.
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Contact Information */}
-          <div className="lg:col-span-1 space-y-6 animate-slide-up">
-            <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <motion.div 
+            className="lg:col-span-1 space-y-6"
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <div className="surface-card p-6 hover:shadow-xl transition-all duration-300 group">
               <div className="flex items-start gap-4">
-                <div className="bg-gradient-to-r from-blue-600 to-cyan-500 p-3 rounded-xl">
+                <motion.div 
+                  className="brand-gradient-bg p-3 rounded-xl shadow-lg"
+                  whileHover={{ scale: 1.1 }}
+                >
                   <Phone className="text-white" size={24} />
-                </div>
+                </motion.div>
                 <div>
-                  <h3 className="font-bold text-gray-900 mb-1">Call / WhatsApp</h3>
-                  <p className="text-gray-600 mb-2">+91 8112403000</p>
+                  <h3 className="font-bold text-text-white mb-1">Call / WhatsApp</h3>
+                  <p className="text-text-muted mb-2">+91 8112403000</p>
                   <button 
                     onClick={handleQuickWhatsApp}
-                    className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
+                    className="text-primary hover:text-primary-gradient text-sm font-medium flex items-center gap-1 group-hover:gap-2 transition-all"
                   >
                     <MessageCircle size={16} />
                     Start Chat
@@ -109,57 +125,72 @@ export default function Contact() {
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <div className="surface-card p-6 hover:shadow-xl transition-all duration-300 group">
               <div className="flex items-start gap-4">
-                <div className="bg-gradient-to-r from-blue-600 to-cyan-500 p-3 rounded-xl">
+                <motion.div 
+                  className="brand-gradient-bg p-3 rounded-xl shadow-lg"
+                  whileHover={{ scale: 1.1 }}
+                >
                   <Mail className="text-white" size={24} />
-                </div>
+                </motion.div>
                 <div>
-                  <h3 className="font-bold text-gray-900 mb-1">Email Us</h3>
-                  <p className="text-gray-600">Info@trustiqueassist.in</p>
+                  <h3 className="font-bold text-text-white mb-1">Email Us</h3>
+                  <p className="text-text-muted">Info@trustiqueassist.in</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <div className="surface-card p-6 hover:shadow-xl transition-all duration-300 group">
               <div className="flex items-start gap-4">
-                <div className="bg-gradient-to-r from-blue-600 to-cyan-500 p-3 rounded-xl">
+                <motion.div 
+                  className="brand-gradient-bg p-3 rounded-xl shadow-lg"
+                  whileHover={{ scale: 1.1 }}
+                >
                   <MapPin className="text-white" size={24} />
-                </div>
+                </motion.div>
                 <div>
-                  <h3 className="font-bold text-gray-900 mb-1">Visit Our Office</h3>
-                  <p className="text-gray-600">Noida, Uttar Pradesh, India</p>
+                  <h3 className="font-bold text-text-white mb-1">Visit Our Office</h3>
+                  <p className="text-text-muted">Noida, Uttar Pradesh, India</p>
                 </div>
               </div>
             </div>
 
             {/* Quick Action Buttons */}
-            <div className="bg-gradient-to-br from-blue-600 to-cyan-500 p-6 rounded-2xl text-white">
+            <motion.div 
+              className="brand-gradient-bg p-6 rounded-2xl text-white shadow-xl"
+              whileHover={{ scale: 1.02 }}
+            >
               <h3 className="font-bold text-lg mb-3">Quick Connect</h3>
               <button 
                 onClick={handleQuickWhatsApp}
-                className="w-full bg-white text-blue-600 py-3 rounded-xl font-semibold hover:scale-105 transition-transform flex items-center justify-center gap-2 mb-3"
+                className="w-full bg-white text-primary py-3 rounded-xl font-semibold hover:scale-105 transition-transform flex items-center justify-center gap-2 mb-3 shadow-lg"
               >
                 <MessageCircle size={20} />
                 WhatsApp Now
               </button>
               <a 
                 href={`tel:${businessWhatsApp}`}
-                className="w-full border border-white text-white py-3 rounded-xl font-semibold hover:bg-white hover:text-blue-600 transition-all flex items-center justify-center gap-2"
+                className="w-full border-2 border-white text-white py-3 rounded-xl font-semibold hover:bg-white hover:text-primary transition-all flex items-center justify-center gap-2"
               >
                 <Phone size={20} />
                 Call Directly
               </a>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* Contact Form */}
-          <div className="lg:col-span-2 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-            <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-lg">
+          <motion.div 
+            className="lg:col-span-2"
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <div className="surface-card p-6 md:p-8 shadow-xl">
               <form className="space-y-6" onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-text-white mb-2">
                       Full Name *
                     </label>
                     <input
@@ -167,14 +198,14 @@ export default function Contact() {
                       value={formData.name}
                       onChange={handleChange}
                       type="text"
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 outline-none transition-all"
+                      className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-bg-card text-text-white placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                       placeholder="John Doe"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-text-white mb-2">
                       Email Address *
                     </label>
                     <input
@@ -182,7 +213,7 @@ export default function Contact() {
                       value={formData.email}
                       onChange={handleChange}
                       type="email"
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 outline-none transition-all"
+                      className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-bg-card text-text-white placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                       placeholder="john@example.com"
                       required
                     />
@@ -191,7 +222,7 @@ export default function Contact() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-text-white mb-2">
                       Phone Number *
                     </label>
                     <input
@@ -199,21 +230,21 @@ export default function Contact() {
                       value={formData.phone}
                       onChange={handleChange}
                       type="tel"
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 outline-none transition-all"
+                      className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-bg-card text-text-white placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                       placeholder="+91 XXX XXX XXXX"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-text-white mb-2">
                       Service Interest *
                     </label>
                     <select
                       name="service"
                       value={formData.service}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 outline-none transition-all"
+                      className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-bg-card text-text-white placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                       required
                     >
                       <option value="">Select a service</option>
@@ -225,24 +256,26 @@ export default function Contact() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Project Details *
-                  </label>
-                  <textarea
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    rows={5}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 outline-none transition-all resize-none"
-                    placeholder="Tell us about your project requirements, timeline, and budget..."
-                    required
-                  ></textarea>
+                    <label className="block text-sm font-medium text-text-white mb-2">
+                      Project Details *
+                    </label>
+                    <textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      rows={5}
+                      className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-bg-card text-text-white placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-none"
+                      placeholder="Tell us about your project requirements, timeline, and budget..."
+                      required
+                    ></textarea>
                 </div>
 
-                <button
+                <motion.button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-8 py-4 rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full brand-gradient-bg text-white px-8 py-4 rounded-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
                   {isSubmitting ? (
                     <>
@@ -255,41 +288,62 @@ export default function Contact() {
                       Send via WhatsApp
                     </>
                   )}
-                </button>
+                </motion.button>
 
                 <p className="text-center text-sm text-gray-500">
                   We'll connect with you on WhatsApp and email to discuss your project
                 </p>
               </form>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Additional Info Section */}
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="text-center p-6 animate-slide-up">
-            <div className="bg-blue-100 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <Clock className="text-blue-600" size={24} />
+          <motion.div 
+            className="text-center p-6 surface-card hover:shadow-xl transition-all"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            whileHover={{ y: -4 }}
+          >
+            <div className="bg-gradient-to-r from-primary/20 to-primary-gradient/20 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <Clock className="text-primary" size={24} />
             </div>
-            <h3 className="font-bold text-gray-900 mb-2">Quick Response</h3>
-            <p className="text-gray-600">We typically reply within 1-2 hours during business days</p>
-          </div>
+            <h3 className="font-bold text-text-white mb-2">Quick Response</h3>
+            <p className="text-text-muted">We typically reply within 1-2 hours during business days</p>
+          </motion.div>
 
-          <div className="text-center p-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-            <div className="bg-green-100 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <Users className="text-green-600" size={24} />
+          <motion.div 
+            className="text-center p-6 surface-card hover:shadow-xl transition-all"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            whileHover={{ y: -4 }}
+          >
+            <div className="bg-gradient-to-r from-primary/20 to-primary-gradient/20 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <Users className="text-primary" size={24} />
             </div>
-            <h3 className="font-bold text-gray-900 mb-2">Expert Consultation</h3>
-            <p className="text-gray-600">Free initial consultation with our technical experts</p>
-          </div>
+            <h3 className="font-bold text-text-white mb-2">Expert Consultation</h3>
+            <p className="text-text-muted">Free initial consultation with our technical experts</p>
+          </motion.div>
 
-          <div className="text-center p-6 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <div className="bg-purple-100 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <Shield className="text-purple-600" size={24} />
+          <motion.div 
+            className="text-center p-6 surface-card hover:shadow-xl transition-all"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            whileHover={{ y: -4 }}
+          >
+            <div className="bg-gradient-to-r from-primary/20 to-primary-gradient/20 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <Shield className="text-primary" size={24} />
             </div>
-            <h3 className="font-bold text-gray-900 mb-2">NDA Protected</h3>
-            <p className="text-gray-600">Your ideas are safe with us. We sign NDAs for all projects</p>
-          </div>
+            <h3 className="font-bold text-text-white mb-2">NDA Protected</h3>
+            <p className="text-text-muted">Your ideas are safe with us. We sign NDAs for all projects</p>
+          </motion.div>
         </div>
       </div>
     </section>

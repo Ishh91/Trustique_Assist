@@ -50,7 +50,7 @@ const ServiceParticleBackground = () => {
         this.size = Math.random() * 2 + 0.5;
         this.speedX = Math.random() * 0.3 - 0.15;
         this.speedY = Math.random() * 0.3 - 0.15;
-        this.color = Math.random() > 0.7 ? '#0056D2' : '#00FF88';
+        this.color = Math.random() > 0.7 ? '#00C8D7' : '#43E8FF';
         this.alpha = Math.random() * 0.3 + 0.1;
         this.oscillation = Math.random() * Math.PI * 2;
       }
@@ -90,7 +90,7 @@ const ServiceParticleBackground = () => {
           const distance = Math.sqrt(dx * dx + dy * dy);
 
           if (distance < 120) {
-            ctx.strokeStyle = `rgba(0, 86, 210, ${0.05 * (1 - distance / 120)})`;
+            ctx.strokeStyle = `rgba(0, 200, 215, ${0.05 * (1 - distance / 120)})`;
             ctx.lineWidth = 0.3;
             ctx.beginPath();
             ctx.moveTo(particles[a].x, particles[a].y);
@@ -146,7 +146,7 @@ const FloatingElementsBackground = () => {
     <div className="fixed inset-0 overflow-hidden -z-10 pointer-events-none">
       {/* Animated gradient orbs */}
       <motion.div
-        className="absolute top-1/4 left-1/4 w-64 h-64 bg-[#0056D2]/10 rounded-full blur-3xl"
+        className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl"
         animate={{
           scale: [1, 1.4, 1],
           opacity: [0.1, 0.2, 0.1],
@@ -160,7 +160,7 @@ const FloatingElementsBackground = () => {
         }}
       />
       <motion.div
-        className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-[#00FF88]/10 rounded-full blur-3xl"
+        className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-primary-gradient/10 rounded-full blur-3xl"
         animate={{
           scale: [1.2, 1, 1.2],
           opacity: [0.15, 0.05, 0.15],
@@ -181,7 +181,7 @@ const FloatingElementsBackground = () => {
           key={shape.id}
           className={`absolute ${
             shape.type === 'circle' ? 'rounded-full' : 'rounded-lg'
-          } bg-gradient-to-br from-[#0056D2]/5 to-[#00FF88]/5 backdrop-blur-sm border border-white/5`}
+          } bg-gradient-to-br from-primary/5 to-primary-gradient/5 backdrop-blur-sm border border-border-subtle`}
           style={{
             left: `${shape.x}%`,
             top: `${shape.y}%`,
@@ -216,8 +216,8 @@ const FloatingElementsBackground = () => {
         }}
         style={{
           backgroundImage: `
-            linear-gradient(rgba(0, 86, 210, 0.2) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0, 86, 210, 0.2) 1px, transparent 1px)
+            linear-gradient(rgba(0, 200, 215, 0.2) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 200, 215, 0.2) 1px, transparent 1px)
           `,
           backgroundSize: '40px 40px'
         }}
@@ -253,15 +253,15 @@ export default function ServiceDetail() {
 
   if (!service) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10">
+      <div className="px-4 sm:px-6 lg:px-8 py-24 relative z-10">
         <motion.h2 
-          className="text-3xl font-bold mb-6"
+          className="text-3xl font-bold mb-6 text-text-white"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
           Service not found
         </motion.h2>
-        <Link to="/services" className="text-blue-600 hover:text-blue-700 transition-colors">
+        <Link to="/services" className="text-primary hover:text-primary-gradient transition-colors">
           Back to Services
         </Link>
       </div>
@@ -271,14 +271,14 @@ export default function ServiceDetail() {
   const Icon = service.icon;
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen bg-bg-main">
       {/* Animated Backgrounds */}
       <ServiceParticleBackground />
       <FloatingElementsBackground />
       
       {/* Content */}
       <section className="relative z-10 py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="px-4 sm:px-6 lg:px-8">
           {/* Back Navigation */}
           <motion.div 
             className="mb-8"
@@ -288,7 +288,7 @@ export default function ServiceDetail() {
           >
             <Link 
               to="/services" 
-              className="inline-flex items-center text-[#0056D2] hover:text-[#0044a8] transition-colors group font-medium backdrop-blur-sm bg-white/50 px-4 py-2 rounded-full border border-white/20"
+              className="inline-flex items-center text-primary hover:text-primary-gradient transition-colors group font-medium backdrop-blur-sm bg-bg-card/80 px-4 py-2 rounded-full border border-border-subtle"
             >
               <ArrowRight className="rotate-180 mr-2 group-hover:-translate-x-1 transition-transform" size={20} />
               Back to All Services
@@ -297,7 +297,7 @@ export default function ServiceDetail() {
 
           {/* Service Header */}
           <motion.div 
-            className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl border border-white/20 shadow-xl mb-12"
+            className="bg-bg-card/90 backdrop-blur-sm p-8 rounded-2xl border border-border-subtle shadow-xl mb-12"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
@@ -312,7 +312,7 @@ export default function ServiceDetail() {
               </motion.div>
               <div className="flex-1">
                 <motion.h1 
-                  className="text-4xl md:text-5xl font-bold text-gray-900 mb-4"
+                  className="text-4xl md:text-5xl font-bold text-text-white mb-4"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
@@ -320,7 +320,7 @@ export default function ServiceDetail() {
                   {service.title}
                 </motion.h1>
                 <motion.p 
-                  className="text-xl text-gray-600 leading-relaxed"
+                  className="text-xl text-text-muted leading-relaxed"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
@@ -336,13 +336,13 @@ export default function ServiceDetail() {
             <div className="lg:col-span-2 space-y-8">
               {/* Full Description */}
               <motion.div 
-                className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl border border-white/20 shadow-lg"
+                className="bg-bg-card/90 backdrop-blur-sm p-8 rounded-2xl border border-border-subtle shadow-lg"
                 variants={fadeInUp}
                 initial="initial"
                 animate="animate"
               >
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Service Overview</h2>
-                <p className="text-gray-700 leading-relaxed text-lg">
+                <h2 className="text-2xl font-bold text-text-white mb-6">Service Overview</h2>
+                <p className="text-text-muted leading-relaxed text-lg">
                   {service.fullDescription}
                 </p>
               </motion.div>
@@ -350,14 +350,14 @@ export default function ServiceDetail() {
               {/* Key Features */}
               {service.features && (
                 <motion.div 
-                  className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl border border-white/20 shadow-lg"
+                  className="bg-bg-card/90 backdrop-blur-sm p-8 rounded-2xl border border-border-subtle shadow-lg"
                   variants={fadeInUp}
                   initial="initial"
                   animate="animate"
                   transition={{ delay: 0.1 }}
                 >
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                    <Zap className="text-[#0056D2]" size={24} />
+                  <h2 className="text-2xl font-bold text-text-white mb-6 flex items-center gap-3">
+                    <Zap className="text-primary" size={24} />
                     Key Features & Capabilities
                   </h2>
                   <motion.div 
@@ -370,10 +370,10 @@ export default function ServiceDetail() {
                       <motion.div
                         key={feature}
                         variants={scaleIn}
-                        className="flex items-start gap-3 p-3 rounded-lg bg-gray-50/50 hover:bg-gray-100/50 transition-colors"
+                        className="flex items-start gap-3 p-3 rounded-lg bg-bg-secondary/70 hover:bg-bg-secondary transition-colors"
                       >
-                        <CheckCircle className="text-[#00FF88] mt-0.5 flex-shrink-0" size={20} />
-                        <span className="text-gray-700">{feature}</span>
+                        <CheckCircle className="text-primary mt-0.5 flex-shrink-0" size={20} />
+                        <span className="text-text-muted">{feature}</span>
                       </motion.div>
                     ))}
                   </motion.div>
@@ -383,14 +383,14 @@ export default function ServiceDetail() {
               {/* Use Cases */}
               {service.useCases && (
                 <motion.div 
-                  className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl border border-white/20 shadow-lg"
+                  className="bg-bg-card/90 backdrop-blur-sm p-8 rounded-2xl border border-border-subtle shadow-lg"
                   variants={fadeInUp}
                   initial="initial"
                   animate="animate"
                   transition={{ delay: 0.2 }}
                 >
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                    <Target className="text-[#0056D2]" size={24} />
+                  <h2 className="text-2xl font-bold text-text-white mb-6 flex items-center gap-3">
+                    <Target className="text-primary" size={24} />
                     Common Use Cases
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -400,10 +400,10 @@ export default function ServiceDetail() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.1 + 0.3 }}
-                        className="flex items-start gap-3 p-3 rounded-lg bg-blue-50/50 hover:bg-blue-100/50 transition-colors"
+                        className="flex items-start gap-3 p-3 rounded-lg bg-bg-secondary/70 hover:bg-bg-secondary transition-colors"
                       >
-                        <div className="w-2 h-2 bg-[#0056D2] rounded-full mt-2 flex-shrink-0" />
-                        <span className="text-gray-700">{useCase}</span>
+                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
+                        <span className="text-text-muted">{useCase}</span>
                       </motion.div>
                     ))}
                   </div>
@@ -416,14 +416,14 @@ export default function ServiceDetail() {
               {/* Technologies */}
               {service.technologies && (
                 <motion.div 
-                  className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-lg"
+                  className="bg-bg-card/90 backdrop-blur-sm p-6 rounded-2xl border border-border-subtle shadow-lg"
                   variants={fadeInUp}
                   initial="initial"
                   animate="animate"
                   transition={{ delay: 0.3 }}
                 >
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <Shield className="text-[#0056D2]" size={20} />
+                  <h3 className="text-xl font-bold text-text-white mb-4 flex items-center gap-2">
+                    <Shield className="text-primary" size={20} />
                     Technologies We Use
                   </h3>
                   <div className="flex flex-wrap gap-2">
@@ -433,7 +433,7 @@ export default function ServiceDetail() {
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: index * 0.05 + 0.4 }}
-                        className="px-3 py-1 bg-gradient-to-r from-[#0056D2]/10 to-[#00FF88]/10 text-[#0056D2] rounded-full text-sm font-medium border border-[#0056D2]/20"
+                        className="px-3 py-1 bg-gradient-to-r from-primary/10 to-primary-gradient/10 text-primary rounded-full text-sm font-medium border border-primary/20"
                       >
                         {tech}
                       </motion.span>
@@ -444,14 +444,14 @@ export default function ServiceDetail() {
 
               {/* Process Timeline */}
               <motion.div 
-                className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-lg"
+                className="bg-bg-card/90 backdrop-blur-sm p-6 rounded-2xl border border-border-subtle shadow-lg"
                 variants={fadeInUp}
                 initial="initial"
                 animate="animate"
                 transition={{ delay: 0.4 }}
               >
-                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <Clock className="text-[#0056D2]" size={20} />
+                <h3 className="text-xl font-bold text-text-white mb-6 flex items-center gap-2">
+                  <Clock className="text-primary" size={20} />
                   Our Process
                 </h3>
                 <div className="space-y-4">
@@ -475,12 +475,12 @@ export default function ServiceDetail() {
                           {stage.step}
                         </div>
                         {index < 5 && (
-                          <div className="w-0.5 h-8 bg-gradient-to-b from-[#0056D2] to-[#00FF88] mt-1" />
+                          <div className="w-0.5 h-8 bg-gradient-to-b from-primary to-primary-gradient mt-1" />
                         )}
                       </div>
                       <div className="flex-1 pb-4">
-                        <h4 className="font-semibold text-gray-900 mb-1">{stage.title}</h4>
-                        <p className="text-gray-600 text-sm">{stage.description}</p>
+                        <h4 className="font-semibold text-text-white mb-1">{stage.title}</h4>
+                        <p className="text-text-muted text-sm">{stage.description}</p>
                       </div>
                     </motion.div>
                   ))}
@@ -489,7 +489,7 @@ export default function ServiceDetail() {
 
               {/* Why Choose Us */}
               <motion.div 
-                className="bg-gradient-to-br from-[#0056D2] to-[#00FF88] p-6 rounded-2xl text-white shadow-lg"
+                className="bg-gradient-to-br from-primary to-primary-gradient p-6 rounded-2xl text-white shadow-lg"
                 variants={fadeInUp}
                 initial="initial"
                 animate="animate"
@@ -530,7 +530,7 @@ export default function ServiceDetail() {
                 >
                   <Link
                     to="/contact"
-                    className="block w-full bg-white text-[#0056D2] text-center py-3 px-6 rounded-xl font-semibold hover:shadow-2xl hover:scale-105 transition-all duration-300"
+                    className="block w-full bg-white text-primary text-center py-3 px-6 rounded-xl font-semibold hover:shadow-2xl hover:scale-105 transition-all duration-300"
                   >
                     Start Your Project
                   </Link>
@@ -546,7 +546,7 @@ export default function ServiceDetail() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
           >
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Related Services</h2>
+            <h2 className="text-3xl font-bold text-text-white mb-8 text-center">Related Services</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {services
                 .filter(s => s.slug !== service.slug)
@@ -562,14 +562,14 @@ export default function ServiceDetail() {
                     >
                       <Link
                         to={`/services/${relatedService.slug}`}
-                        className="block bg-white/80 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group"
+                        className="block bg-bg-card/90 backdrop-blur-sm p-6 rounded-2xl border border-border-subtle shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group"
                       >
                         <div className="inline-flex p-3 rounded-lg brand-gradient-bg mb-4 group-hover:scale-110 transition-transform">
                           <RelatedIcon className="text-white" size={24} />
                         </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">{relatedService.title}</h3>
-                        <p className="text-gray-600 text-sm leading-relaxed">{relatedService.description}</p>
-                        <div className="mt-4 flex items-center text-[#0056D2] font-medium text-sm">
+                        <h3 className="text-xl font-bold text-text-white mb-2">{relatedService.title}</h3>
+                        <p className="text-text-muted text-sm leading-relaxed">{relatedService.description}</p>
+                        <div className="mt-4 flex items-center text-primary font-medium text-sm">
                           Learn more
                           <ArrowRight size={16} className="ml-1 group-hover:translate-x-1 transition-transform" />
                         </div>
