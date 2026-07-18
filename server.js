@@ -42,54 +42,9 @@ const PORT = process.env.PORT || 3001;
 // Trust proxy for proper client IP detection
 app.set('trust proxy', 1);
 
-// Middleware - Dynamic CORS configuration with env support
+// Middleware - Simplified, permissive CORS for debugging
 app.use(cors({
-  origin: function (origin, callback) {
-    // Base allowed origins
-      const staticAllowed = [
-        'http://localhost:5173',
-        'http://localhost:5174',
-        'http://localhost:5175',
-        'https://trustiqueassist21.netlify.app',
-        'https://*.netlify.app',
-        'https://trustiqueassist.in',
-        'https://www.trustiqueassist.in',
-        'https://trustiqueassist.com',
-        'https://www.trustiqueassist.com'
-      ];
-
-    // Allow adding origins via env var: CORS_ORIGINS=origin1,origin2
-    const envOrigins = (process.env.CORS_ORIGINS || '')
-      .split(',')
-      .map(s => s.trim())
-      .filter(Boolean);
-
-    const allowedOrigins = [...staticAllowed, ...envOrigins];
-
-    // Allow requests with no origin (mobile apps, curl, server-to-server, curl, etc.)
-    if (!origin) return callback(null, true);
-
-    // Check if origin matches any allowed pattern (supports simple wildcard like https://*.netlify.app)
-    const isAllowed = allowedOrigins.some(allowedOrigin => {
-      if (allowedOrigin.includes('*')) {
-        const pattern = allowedOrigin.replace('*', '.*');
-        try {
-          return new RegExp(`^${pattern}$`).test(origin);
-        } catch {
-          return false;
-        }
-      }
-      return allowedOrigin === origin;
-    });
-
-    if (isAllowed) {
-      callback(null, true);
-    } else {
-      // Do not throw errors here; let the request proceed without CORS headers
-      // to avoid surfacing as HTTP 500. The browser will block disallowed origins.
-      callback(null, false);
-    }
-  },
+  origin: '*',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
