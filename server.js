@@ -247,31 +247,38 @@ mongoose.connection.once('open', () => {
 // Get all published blog posts
 app.get('/api/blog', async (req, res) => {
   try {
-    const { page = 1, limit = 10, search = '', tag = '' } = req.query;
-    const offset = (page - 1) * limit;
+    // Try MongoDB first
+    if (mongoose.connection.readyState === 1) {
+      const { page = 1, limit = 10, search = '', tag = '' } = req.query;
+      const offset = (page - 1) * limit;
 
-    let query = { published: true };
+      let query = { published: true };
 
-    if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { excerpt: { $regex: search, $options: 'i' } },
-        { content: { $regex: search, $options: 'i' } }
-      ];
+      if (search) {
+        query.$or = [
+          { title: { $regex: search, $options: 'i' } },
+          { excerpt: { $regex: search, $options: 'i' } },
+          { content: { $regex: search, $options: 'i' } }
+        ];
+      }
+
+      if (tag) {
+        query.tags = { $in: [tag] };
+      }
+
+      const posts = await BlogPost.find(query)
+        .sort({ publishedAt: -1 })
+        .limit(Number(limit))
+        .skip(Number(offset));
+
+      return res.json(posts);
     }
-
-    if (tag) {
-      query.tags = { $in: [tag] };
-    }
-
-    const posts = await BlogPost.find(query)
-      .sort({ publishedAt: -1 })
-      .limit(Number(limit))
-      .skip(Number(offset));
-
-    res.json(posts);
+    // Fallback to empty array if no MongoDB
+    res.json([]);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error fetching blog posts:', err);
+    // Fallback to empty array even if there's an error
+    res.json([]);
   }
 });
 
@@ -279,13 +286,18 @@ app.get('/api/blog', async (req, res) => {
 app.get('/api/blog/:slug', async (req, res) => {
   try {
     const { slug } = req.params;
-    const post = await BlogPost.findOne({ slug, published: true });
-    if (!post) {
-      return res.status(404).json({ error: 'Post not found' });
+    // Try MongoDB first
+    if (mongoose.connection.readyState === 1) {
+      const post = await BlogPost.findOne({ slug, published: true });
+      if (post) {
+        return res.json(post);
+      }
     }
-    res.json(post);
+    // Fallback to 404 if no MongoDB or no post
+    res.status(404).json({ error: 'Post not found' });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error fetching blog post:', err);
+    res.status(404).json({ error: 'Post not found' });
   }
 });
 
@@ -426,10 +438,27 @@ app.get('/health', (req, res) => {
 // Get all active testimonials
 app.get('/api/testimonials', async (req, res) => {
   try {
-    const testimonials = await Testimonial.find({ isActive: true }).sort({ createdAt: -1 });
-    res.json(testimonials);
+    // Try MongoDB first
+    if (mongoose.connection.readyState === 1) {
+      const testimonials = await Testimonial.find({ isActive: true }).sort({ createdAt: -1 });
+      if (testimonials.length > 0) {
+        return res.json(testimonials);
+      }
+    }
+    // Fallback to JSON file
+    const fallbackPath = path.join(__dirname, 'testimonials.json');
+    const fallbackData = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
+    res.json(fallbackData);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error fetching testimonials:', err);
+    // Fallback to JSON file even if there's an error
+    try {
+      const fallbackPath = path.join(__dirname, 'testimonials.json');
+      const fallbackData = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
+      res.json(fallbackData);
+    } catch (fallbackErr) {
+      res.status(500).json({ error: err.message });
+    }
   }
 });
 
@@ -437,13 +466,36 @@ app.get('/api/testimonials', async (req, res) => {
 app.get('/api/testimonials/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const testimonial = await Testimonial.findOne({ id, isActive: true });
+    // Try MongoDB first
+    if (mongoose.connection.readyState === 1) {
+      const testimonial = await Testimonial.findOne({ id, isActive: true });
+      if (testimonial) {
+        return res.json(testimonial);
+      }
+    }
+    // Fallback to JSON file
+    const fallbackPath = path.join(__dirname, 'testimonials.json');
+    const fallbackData = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
+    const testimonial = fallbackData.find(t => t.id === id && t.isActive);
     if (!testimonial) {
       return res.status(404).json({ error: 'Testimonial not found' });
     }
     res.json(testimonial);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error fetching testimonial:', err);
+    // Fallback to JSON file even if there's an error
+    try {
+      const { id } = req.params;
+      const fallbackPath = path.join(__dirname, 'testimonials.json');
+      const fallbackData = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
+      const testimonial = fallbackData.find(t => t.id === id && t.isActive);
+      if (!testimonial) {
+        return res.status(404).json({ error: 'Testimonial not found' });
+      }
+      res.json(testimonial);
+    } catch (fallbackErr) {
+      res.status(500).json({ error: err.message });
+    }
   }
 });
 

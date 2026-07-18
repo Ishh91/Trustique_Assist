@@ -1,5 +1,6 @@
 [
   {
+    "id": "1",
     "name": "Pushpanjali Groups",
     "role": "E-commerce Partner",
     "company": "Pushpanjali Groups",
@@ -10,6 +11,7 @@
     "isActive": true
   },
   {
+    "id": "2",
     "name": "Safesense Tech Pvt Ltd",
     "role": "IoT Solutions Provider",
     "company": "Safesense Tech Pvt Ltd",
@@ -20,6 +22,7 @@
     "isActive": true
   },
   {
+    "id": "3",
     "name": "Safecure services Limited",
     "role": "Security Solutions",
     "company": "Safecure services Limited",

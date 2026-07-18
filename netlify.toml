@@ -36,5 +36,5 @@
     Cache-Control = "public, max-age=31536000"
 
 [context.production.environment]
-  VITE_API_URL = "https://trustique-assist.onrender.com"
+  VITE_API_URL = "https://trustique-assist.onrender.com/api"
   VITE_BACKEND_URL = "https://trustique-assist.onrender.com"

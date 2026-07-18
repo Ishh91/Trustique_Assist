@@ -35,7 +35,7 @@ Add these environment variables in Render Dashboard:
 ```bash
 NODE_ENV=production
 PORT=3001
-FRONTEND_URL=https://trustiqueassist21.netlify.app
+FRONTEND_URL=https://trustiqueassist.com
 DATABASE_URL=./blog.db
 JWT_SECRET=your-super-secret-jwt-key-here
 ADMIN_PASSWORD=your-secure-admin-password
@@ -52,13 +52,13 @@ Click "Create Web Service" and wait for deployment!
 Once deployed, test these endpoints:
 ```bash
 # Health check
-curl https://trustique-assist.onrender.com//health
+curl https://trustique-assist.onrender.com/health
 
 # Testimonials API
 curl https://trustique-assist.onrender.com/api/testimonials
 
 # Blog posts
-curl https://trustique-assist.onrender.com/api/blog-posts
+curl https://trustique-assist.onrender.com/api/blog
 ```
 
 ### **2. Update Frontend Configuration**
@@ -70,8 +70,8 @@ Replace `your-app-name.onrender.com` with your actual Render URL:
 
 ### **3. Test CORS Integration**
 ```bash
-# Test from your Netlify frontend
-curl -H "Origin: https://trustiqueassist21.netlify.app" \
+# Test from your frontend
+curl -H "Origin: https://trustiqueassist.com" \
      https://your-app-name.onrender.com/api/testimonials
 ```
 
@@ -147,6 +147,6 @@ Visit your Netlify frontend and verify:
 - **Render Dashboard**: https://dashboard.render.com
 - **Your Backend**: https://your-app-name.onrender.com
 - **Health Check**: https://your-app-name.onrender.com/health
-- **Frontend**: https://trustiqueassist21.netlify.app
+- **Frontend**: https://trustiqueassist.com
 
 **Need help? Check the Render documentation or reach out!** 🚀
