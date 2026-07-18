@@ -57,12 +57,19 @@ if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
 }
 
-// MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/trustique';
+// MongoDB Connection (with graceful failure)
+const MONGODB_URI = process.env.MONGODB_URI;
 
-mongoose.connect(MONGODB_URI)
-  .then(() => console.log('✅ Connected to MongoDB'))
-  .catch(err => console.error('❌ Error connecting to MongoDB:', err));
+if (MONGODB_URI) {
+  mongoose.connect(MONGODB_URI)
+    .then(() => console.log('✅ Connected to MongoDB'))
+    .catch(err => {
+      console.error('❌ Error connecting to MongoDB:', err);
+      console.log('⚠️  Continuing server startup without MongoDB— using JSON fallbacks!');
+    });
+} else {
+  console.log('⚠️  No MONGODB_URI provided— using JSON fallbacks only!');
+}
 
 // Mongoose Schemas & Models
 
@@ -268,10 +275,48 @@ app.get('/api/blog/:slug', async (req, res) => {
   }
 });
 
-// Admin Routes (Create, Update, Delete) - Protected
+
+// Middleware to check MongoDB connection for admin routes
+const requireMongoDB = (req, res, next) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({ error: 'Admin features unavailable— MongoDB not connected' });
+  }
+  next();
+};
+
+// Admin login endpoint
+app.post('/api/admin/login', requireMongoDB, async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Username and password are required' });
+    }
+    
+    // Find admin user by username
+    const admin = await Admin.findOne({ username });
+    if (!admin) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    
+    // Compare passwords
+    const passwordMatch = await bcrypt.compare(password, admin.password);
+    if (!passwordMatch) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    
+    // Generate JWT token (expires in 7 days)
+    const token = jwt.sign({ userId: admin._id, role: 'admin' }, JWT_SECRET, { expiresIn: '7d' });
+    
+    res.json({ token });
+  } catch (err) {
+    console.error('❌ Error in /api/admin/login:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 // Create new blog post
-app.post('/api/admin/blog', authenticateAdmin, async (req, res) => {
+app.post('/api/admin/blog', authenticateAdmin, requireMongoDB, async (req, res) => {
   try {
     const { title, excerpt, content, featuredImage, author, tags = [], published = false } = req.body;
 
@@ -300,6 +345,7 @@ app.post('/api/admin/blog', authenticateAdmin, async (req, res) => {
 
     res.json({ id, slug, message: 'Blog post created successfully' });
   } catch (err) {
+    console.error('❌ Error in /api/admin/blog POST:', err);
     if (err.code === 11000) {
       return res.status(409).json({ error: 'A post with this title already exists' });
     }
@@ -308,7 +354,7 @@ app.post('/api/admin/blog', authenticateAdmin, async (req, res) => {
 });
 
 // Update blog post
-app.put('/api/admin/blog/:id', authenticateAdmin, async (req, res) => {
+app.put('/api/admin/blog/:id', authenticateAdmin, requireMongoDB, async (req, res) => {
   try {
     const { id } = req.params;
     const { title, excerpt, content, featuredImage, author, tags, published } = req.body;
@@ -341,12 +387,13 @@ app.put('/api/admin/blog/:id', authenticateAdmin, async (req, res) => {
 
     res.json({ message: 'Blog post updated successfully' });
   } catch (err) {
+    console.error('❌ Error in /api/admin/blog PUT:', err);
     res.status(500).json({ error: err.message });
   }
 });
 
 // Delete blog post
-app.delete('/api/admin/blog/:id', authenticateAdmin, async (req, res) => {
+app.delete('/api/admin/blog/:id', authenticateAdmin, requireMongoDB, async (req, res) => {
   try {
     const { id } = req.params;
     const deletedPost = await BlogPost.findOneAndDelete({ id });
@@ -355,44 +402,20 @@ app.delete('/api/admin/blog/:id', authenticateAdmin, async (req, res) => {
     }
     res.json({ message: 'Blog post deleted successfully' });
   } catch (err) {
+    console.error('❌ Error in /api/admin/blog DELETE:', err);
     res.status(500).json({ error: err.message });
   }
 });
 
 // Get all blog posts (admin view)
-app.get('/api/admin/blog', authenticateAdmin, async (req, res) => {
+app.get('/api/admin/blog', authenticateAdmin, requireMongoDB, async (req, res) => {
   try {
     const posts = await BlogPost.find().sort({ createdAt: -1 });
     res.json(posts);
   } catch (err) {
+    console.error('❌ Error in /api/admin/blog GET:', err);
     res.status(500).json({ error: err.message });
   }
-});
-
-// Admin login endpoint
-app.post('/api/admin/login', async (req, res) => {
-  const { username, password } = req.body;
-  
-  if (!username || !password) {
-    return res.status(400).json({ error: 'Username and password are required' });
-  }
-  
-  // Find admin user by username
-  const admin = await Admin.findOne({ username });
-  if (!admin) {
-    return res.status(401).json({ error: 'Invalid credentials' });
-  }
-  
-  // Compare passwords
-  const passwordMatch = await bcrypt.compare(password, admin.password);
-  if (!passwordMatch) {
-    return res.status(401).json({ error: 'Invalid credentials' });
-  }
-  
-  // Generate JWT token (expires in 7 days)
-  const token = jwt.sign({ userId: admin._id, role: 'admin' }, JWT_SECRET, { expiresIn: '7d' });
-  
-  res.json({ token });
 });
 
 // Health check endpoint
