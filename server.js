@@ -166,6 +166,10 @@ function generateSlug(title) {
 
 // Seed function to seed testimonials
 async function seedTestimonials() {
+  if (mongoose.connection.readyState !== 1) {
+    console.log('MongoDB not connected, skipping testimonials seed.');
+    return;
+  }
   try {
     const count = await Testimonial.countDocuments();
     if (count > 0) {
@@ -174,17 +178,21 @@ async function seedTestimonials() {
     }
     
     const filePath = path.join(__dirname, 'testimonials.json');
+    if (!fs.existsSync(filePath)) {
+      console.log('testimonials.json not found, skipping seed.');
+      return;
+    }
     const data = fs.readFileSync(filePath, 'utf8');
     const testimonials = JSON.parse(data);
 
-    testimonials.forEach(async (testimonial) => {
+    for (const testimonial of testimonials) {
       const id = Date.now().toString() + Math.random().toString(36).substr(2, 9);
       const newTestimonial = new Testimonial({
         id,
         ...testimonial
       });
       await newTestimonial.save();
-    });
+    }
     console.log('✅ Testimonials seeded successfully.');
   } catch (err) {
     console.error('❌ Error seeding testimonials:', err);
@@ -193,6 +201,10 @@ async function seedTestimonials() {
 
 // Seed function to create/update admin user
 async function seedAdmin() {
+  if (mongoose.connection.readyState !== 1) {
+    console.log('MongoDB not connected, skipping admin seed.');
+    return;
+  }
   try {
     // Get initial admin credentials from .env or use defaults
     const initialUsername = process.env.INITIAL_ADMIN_USERNAME || 'admin';
@@ -437,65 +449,58 @@ app.get('/health', (req, res) => {
 
 // Get all active testimonials
 app.get('/api/testimonials', async (req, res) => {
+  console.log('✅ /api/testimonials called');
   try {
-    // Try MongoDB first
+    // First try to read the JSON file directly for reliability
+    const fallbackPath = path.join(__dirname, 'testimonials.json');
+    console.log('Looking for testimonials.json at:', fallbackPath);
+    if (fs.existsSync(fallbackPath)) {
+      const fallbackData = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
+      console.log('Returning testimonials from JSON file');
+      return res.json(fallbackData);
+    }
+    // If no JSON file, try MongoDB
     if (mongoose.connection.readyState === 1) {
       const testimonials = await Testimonial.find({ isActive: true }).sort({ createdAt: -1 });
       if (testimonials.length > 0) {
         return res.json(testimonials);
       }
     }
-    // Fallback to JSON file
-    const fallbackPath = path.join(__dirname, 'testimonials.json');
-    const fallbackData = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
-    res.json(fallbackData);
+    // If neither, return empty array
+    res.json([]);
   } catch (err) {
-    console.error('Error fetching testimonials:', err);
-    // Fallback to JSON file even if there's an error
-    try {
-      const fallbackPath = path.join(__dirname, 'testimonials.json');
-      const fallbackData = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
-      res.json(fallbackData);
-    } catch (fallbackErr) {
-      res.status(500).json({ error: err.message });
-    }
+    console.error('❌ Error in /api/testimonials:', err);
+    // Last resort: return empty array
+    res.json([]);
   }
 });
 
 // Get single testimonial by ID
 app.get('/api/testimonials/:id', async (req, res) => {
+  console.log('✅ /api/testimonials/:id called, id:', req.params.id);
   try {
     const { id } = req.params;
-    // Try MongoDB first
+    // First try JSON file
+    const fallbackPath = path.join(__dirname, 'testimonials.json');
+    if (fs.existsSync(fallbackPath)) {
+      const fallbackData = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
+      const testimonial = fallbackData.find(t => t.id === id && t.isActive);
+      if (testimonial) {
+        console.log('Returning testimonial from JSON file');
+        return res.json(testimonial);
+      }
+    }
+    // Then try MongoDB
     if (mongoose.connection.readyState === 1) {
       const testimonial = await Testimonial.findOne({ id, isActive: true });
       if (testimonial) {
         return res.json(testimonial);
       }
     }
-    // Fallback to JSON file
-    const fallbackPath = path.join(__dirname, 'testimonials.json');
-    const fallbackData = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
-    const testimonial = fallbackData.find(t => t.id === id && t.isActive);
-    if (!testimonial) {
-      return res.status(404).json({ error: 'Testimonial not found' });
-    }
-    res.json(testimonial);
+    res.status(404).json({ error: 'Testimonial not found' });
   } catch (err) {
-    console.error('Error fetching testimonial:', err);
-    // Fallback to JSON file even if there's an error
-    try {
-      const { id } = req.params;
-      const fallbackPath = path.join(__dirname, 'testimonials.json');
-      const fallbackData = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
-      const testimonial = fallbackData.find(t => t.id === id && t.isActive);
-      if (!testimonial) {
-        return res.status(404).json({ error: 'Testimonial not found' });
-      }
-      res.json(testimonial);
-    } catch (fallbackErr) {
-      res.status(500).json({ error: err.message });
-    }
+    console.error('❌ Error in /api/testimonials/:id:', err);
+    res.status(404).json({ error: 'Testimonial not found' });
   }
 });
 
