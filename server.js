@@ -17,7 +17,6 @@ const app = express();
 
 // Auth configuration
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 
 // JWT verification middleware
 const authenticateAdmin = (req, res, next) => {
@@ -42,9 +41,54 @@ const PORT = process.env.PORT || 3001;
 // Trust proxy for proper client IP detection
 app.set('trust proxy', 1);
 
-// Middleware - Simplified, permissive CORS for debugging
+// Middleware - Dynamic CORS configuration with env support
 app.use(cors({
-  origin: '*',
+  origin: function (origin, callback) {
+    // Base allowed origins
+      const staticAllowed = [
+        'http://localhost:5173',
+        'http://localhost:5174',
+        'http://localhost:5175',
+        'https://trustiqueassist21.netlify.app',
+        'https://*.netlify.app',
+        'https://trustiqueassist.in',
+        'https://www.trustiqueassist.in',
+        'https://trustiqueassist.com',
+        'https://www.trustiqueassist.com'
+      ];
+
+    // Allow adding origins via env var: CORS_ORIGINS=origin1,origin2
+    const envOrigins = (process.env.CORS_ORIGINS || '')
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    const allowedOrigins = [...staticAllowed, ...envOrigins];
+
+    // Allow requests with no origin (mobile apps, curl, server-to-server, curl, etc.)
+    if (!origin) return callback(null, true);
+
+    // Check if origin matches any allowed pattern (supports simple wildcard like https://*.netlify.app)
+    const isAllowed = allowedOrigins.some(allowedOrigin => {
+      if (allowedOrigin.includes('*')) {
+        const pattern = allowedOrigin.replace('*', '.*');
+        try {
+          return new RegExp(`^${pattern}$`).test(origin);
+        } catch {
+          return false;
+        }
+      }
+      return allowedOrigin === origin;
+    });
+
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      // Do not throw errors here; let the request proceed without CORS headers
+      // to avoid surfacing as HTTP 500. The browser will block disallowed origins.
+      callback(null, false);
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -57,18 +101,10 @@ if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
 }
 
-// MongoDB Connection (with graceful failure)
+// MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI;
-
-if (MONGODB_URI) {
-  mongoose.connect(MONGODB_URI)
-    .then(() => console.log('✅ Connected to MongoDB'))
-    .catch(err => {
-      console.error('❌ Error connecting to MongoDB:', err);
-      console.log('⚠️  Continuing server startup without MongoDB— using JSON fallbacks!');
-    });
-} else {
-  console.log('⚠️  No MONGODB_URI provided— using JSON fallbacks only!');
+if (!MONGODB_URI) {
+  throw new Error('MONGODB_URI is required');
 }
 
 // Mongoose Schemas & Models
@@ -128,10 +164,6 @@ function generateSlug(title) {
 
 // Seed function to seed testimonials
 async function seedTestimonials() {
-  if (mongoose.connection.readyState !== 1) {
-    console.log('MongoDB not connected, skipping testimonials seed.');
-    return;
-  }
   try {
     const count = await Testimonial.countDocuments();
     if (count > 0) {
@@ -148,9 +180,8 @@ async function seedTestimonials() {
     const testimonials = JSON.parse(data);
 
     for (const testimonial of testimonials) {
-      const id = Date.now().toString() + Math.random().toString(36).substr(2, 9);
       const newTestimonial = new Testimonial({
-        id,
+        id: testimonial.id || (Date.now().toString() + Math.random().toString(36).substr(2, 9)),
         ...testimonial
       });
       await newTestimonial.save();
@@ -163,10 +194,6 @@ async function seedTestimonials() {
 
 // Seed function to create/update admin user
 async function seedAdmin() {
-  if (mongoose.connection.readyState !== 1) {
-    console.log('MongoDB not connected, skipping admin seed.');
-    return;
-  }
   try {
     // Get initial admin credentials from .env or use defaults
     const initialUsername = process.env.INITIAL_ADMIN_USERNAME || 'admin';
@@ -192,7 +219,6 @@ async function seedAdmin() {
       );
       console.log('✅ Admin password updated successfully!');
       console.log('Username:', initialUsername);
-      console.log('Password:', initialPassword);
     } else {
       // Create new admin user
       const hashedPassword = await bcrypt.hash(initialPassword, 10);
@@ -203,56 +229,43 @@ async function seedAdmin() {
       await newAdmin.save();
       console.log('✅ Initial admin user created successfully!');
       console.log('Username:', initialUsername);
-      console.log('Password:', initialPassword);
     }
   } catch (err) {
     console.error('❌ Error seeding admin user:', err);
   }
 }
 
-// Seed data on connection
-mongoose.connection.once('open', () => {
-  seedTestimonials();
-  seedAdmin();
-});
-
 // Blog API Routes
 
 // Get all published blog posts
 app.get('/api/blog', async (req, res) => {
   try {
-    // Try MongoDB first
-    if (mongoose.connection.readyState === 1) {
-      const { page = 1, limit = 10, search = '', tag = '' } = req.query;
-      const offset = (page - 1) * limit;
+    const { page = 1, limit = 10, search = '', tag = '' } = req.query;
+    const offset = (page - 1) * limit;
 
-      let query = { published: true };
+    const query = { published: true };
 
-      if (search) {
-        query.$or = [
-          { title: { $regex: search, $options: 'i' } },
-          { excerpt: { $regex: search, $options: 'i' } },
-          { content: { $regex: search, $options: 'i' } }
-        ];
-      }
-
-      if (tag) {
-        query.tags = { $in: [tag] };
-      }
-
-      const posts = await BlogPost.find(query)
-        .sort({ publishedAt: -1 })
-        .limit(Number(limit))
-        .skip(Number(offset));
-
-      return res.json(posts);
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { excerpt: { $regex: search, $options: 'i' } },
+        { content: { $regex: search, $options: 'i' } }
+      ];
     }
-    // Fallback to empty array if no MongoDB
-    res.json([]);
+
+    if (tag) {
+      query.tags = { $in: [tag] };
+    }
+
+    const posts = await BlogPost.find(query)
+      .sort({ publishedAt: -1 })
+      .limit(Number(limit))
+      .skip(Number(offset));
+
+    res.json(posts);
   } catch (err) {
     console.error('Error fetching blog posts:', err);
-    // Fallback to empty array even if there's an error
-    res.json([]);
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -260,14 +273,10 @@ app.get('/api/blog', async (req, res) => {
 app.get('/api/blog/:slug', async (req, res) => {
   try {
     const { slug } = req.params;
-    // Try MongoDB first
-    if (mongoose.connection.readyState === 1) {
-      const post = await BlogPost.findOne({ slug, published: true });
-      if (post) {
-        return res.json(post);
-      }
+    const post = await BlogPost.findOne({ slug, published: true });
+    if (post) {
+      return res.json(post);
     }
-    // Fallback to 404 if no MongoDB or no post
     res.status(404).json({ error: 'Post not found' });
   } catch (err) {
     console.error('Error fetching blog post:', err);
@@ -275,17 +284,8 @@ app.get('/api/blog/:slug', async (req, res) => {
   }
 });
 
-
-// Middleware to check MongoDB connection for admin routes
-const requireMongoDB = (req, res, next) => {
-  if (mongoose.connection.readyState !== 1) {
-    return res.status(503).json({ error: 'Admin features unavailable— MongoDB not connected' });
-  }
-  next();
-};
-
 // Admin login endpoint
-app.post('/api/admin/login', requireMongoDB, async (req, res) => {
+app.post('/api/admin/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     
@@ -316,7 +316,7 @@ app.post('/api/admin/login', requireMongoDB, async (req, res) => {
 });
 
 // Create new blog post
-app.post('/api/admin/blog', authenticateAdmin, requireMongoDB, async (req, res) => {
+app.post('/api/admin/blog', authenticateAdmin, async (req, res) => {
   try {
     const { title, excerpt, content, featuredImage, author, tags = [], published = false } = req.body;
 
@@ -354,7 +354,7 @@ app.post('/api/admin/blog', authenticateAdmin, requireMongoDB, async (req, res) 
 });
 
 // Update blog post
-app.put('/api/admin/blog/:id', authenticateAdmin, requireMongoDB, async (req, res) => {
+app.put('/api/admin/blog/:id', authenticateAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const { title, excerpt, content, featuredImage, author, tags, published } = req.body;
@@ -393,7 +393,7 @@ app.put('/api/admin/blog/:id', authenticateAdmin, requireMongoDB, async (req, re
 });
 
 // Delete blog post
-app.delete('/api/admin/blog/:id', authenticateAdmin, requireMongoDB, async (req, res) => {
+app.delete('/api/admin/blog/:id', authenticateAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const deletedPost = await BlogPost.findOneAndDelete({ id });
@@ -408,7 +408,7 @@ app.delete('/api/admin/blog/:id', authenticateAdmin, requireMongoDB, async (req,
 });
 
 // Get all blog posts (admin view)
-app.get('/api/admin/blog', authenticateAdmin, requireMongoDB, async (req, res) => {
+app.get('/api/admin/blog', authenticateAdmin, async (req, res) => {
   try {
     const posts = await BlogPost.find().sort({ createdAt: -1 });
     res.json(posts);
@@ -427,58 +427,27 @@ app.get('/health', (req, res) => {
 
 // Get all active testimonials
 app.get('/api/testimonials', async (req, res) => {
-  console.log('✅ /api/testimonials called');
   try {
-    // First try to read the JSON file directly for reliability
-    const fallbackPath = path.join(__dirname, 'testimonials.json');
-    console.log('Looking for testimonials.json at:', fallbackPath);
-    if (fs.existsSync(fallbackPath)) {
-      const fallbackData = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
-      console.log('Returning testimonials from JSON file');
-      return res.json(fallbackData);
-    }
-    // If no JSON file, try MongoDB
-    if (mongoose.connection.readyState === 1) {
-      const testimonials = await Testimonial.find({ isActive: true }).sort({ createdAt: -1 });
-      if (testimonials.length > 0) {
-        return res.json(testimonials);
-      }
-    }
-    // If neither, return empty array
-    res.json([]);
+    const testimonials = await Testimonial.find({ isActive: true }).sort({ createdAt: -1 });
+    res.json(testimonials);
   } catch (err) {
     console.error('❌ Error in /api/testimonials:', err);
-    // Last resort: return empty array
-    res.json([]);
+    res.status(500).json({ error: err.message });
   }
 });
 
 // Get single testimonial by ID
 app.get('/api/testimonials/:id', async (req, res) => {
-  console.log('✅ /api/testimonials/:id called, id:', req.params.id);
   try {
     const { id } = req.params;
-    // First try JSON file
-    const fallbackPath = path.join(__dirname, 'testimonials.json');
-    if (fs.existsSync(fallbackPath)) {
-      const fallbackData = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
-      const testimonial = fallbackData.find(t => t.id === id && t.isActive);
-      if (testimonial) {
-        console.log('Returning testimonial from JSON file');
-        return res.json(testimonial);
-      }
+    const testimonial = await Testimonial.findOne({ id, isActive: true });
+    if (!testimonial) {
+      return res.status(404).json({ error: 'Testimonial not found' });
     }
-    // Then try MongoDB
-    if (mongoose.connection.readyState === 1) {
-      const testimonial = await Testimonial.findOne({ id, isActive: true });
-      if (testimonial) {
-        return res.json(testimonial);
-      }
-    }
-    res.status(404).json({ error: 'Testimonial not found' });
+    res.json(testimonial);
   } catch (err) {
     console.error('❌ Error in /api/testimonials/:id:', err);
-    res.status(404).json({ error: 'Testimonial not found' });
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -581,12 +550,25 @@ app.use((req, res, next) => {
   }
 });
 
-// Start server
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`📝 Blog API available at http://localhost:${PORT}/api/blog`);
-  console.log(`⭐ Testimonials API available at http://localhost:${PORT}/api/testimonials`);
-  console.log(`🏥 Health check available at http://localhost:${PORT}/health`);
-  console.log(`📄 Frontend (production build): http://localhost:${PORT}`);
-});
+async function startServer() {
+  try {
+    await mongoose.connect(MONGODB_URI);
+    console.log('✅ Connected to MongoDB');
+    await seedTestimonials();
+    await seedAdmin();
+
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`📝 Blog API available at http://localhost:${PORT}/api/blog`);
+      console.log(`⭐ Testimonials API available at http://localhost:${PORT}/api/testimonials`);
+      console.log(`🏥 Health check available at http://localhost:${PORT}/health`);
+      console.log(`📄 Frontend (production build): http://localhost:${PORT}`);
+    });
+  } catch (err) {
+    console.error('❌ Error connecting to MongoDB:', err);
+    process.exit(1);
+  }
+}
+
+startServer();
