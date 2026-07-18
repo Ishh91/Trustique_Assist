@@ -32,7 +32,7 @@ const TestimonialsAdmin: React.FC = () => {
     isActive: true
   });
 
-  const apiBase = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:3001/api');
+  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
   const API_URL = `${apiBase}/admin/testimonials`;
   const token = localStorage.getItem('adminToken');
 

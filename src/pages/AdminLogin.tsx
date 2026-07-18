@@ -11,7 +11,7 @@ const AdminLogin: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const apiBase = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:3001/api');
+  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

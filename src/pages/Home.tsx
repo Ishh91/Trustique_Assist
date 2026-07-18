@@ -490,7 +490,7 @@ export default function Home() {
   // Optimized testimonial fetch
   const fetchTestimonials = useCallback(async () => {
     try {
-      const apiBase = (import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:3001/api'));
+      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
       const response = await fetch(`${apiBase}/testimonials`);
       if (!response.ok) {
         throw new Error(`Failed to fetch testimonials (${response.status})`);
