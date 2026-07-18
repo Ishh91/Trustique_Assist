@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Routes, Route } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { LayoutDashboard, FileText, MessageSquare, LogOut } from 'lucide-react';
+import { LayoutDashboard, FileText, MessageSquare, LogOut, Briefcase, Code } from 'lucide-react';
 import BlogAdmin from './BlogAdmin';
 import TestimonialsAdmin from './TestimonialsAdmin';
+import PortfolioAdmin from './PortfolioAdmin';
+import ServicesAdmin from './ServicesAdmin';
 
 const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('blog');
@@ -77,6 +79,32 @@ const AdminDashboard: React.FC = () => {
                 Testimonials
               </div>
             </button>
+            <button
+              onClick={() => setActiveTab('portfolio')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === 'portfolio'
+                  ? 'border-cyan-500 text-cyan-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Briefcase className="w-4 h-4" />
+                Portfolio
+              </div>
+            </button>
+            <button
+              onClick={() => setActiveTab('services')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === 'services'
+                  ? 'border-cyan-500 text-cyan-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Code className="w-4 h-4" />
+                Services
+              </div>
+            </button>
           </div>
         </div>
       </nav>
@@ -91,6 +119,8 @@ const AdminDashboard: React.FC = () => {
         >
           {activeTab === 'blog' && <BlogAdmin />}
           {activeTab === 'testimonials' && <TestimonialsAdmin />}
+          {activeTab === 'portfolio' && <PortfolioAdmin />}
+          {activeTab === 'services' && <ServicesAdmin />}
         </motion.div>
       </main>
     </div>

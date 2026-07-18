@@ -1,19 +1,49 @@
 import { useState, useEffect, useRef } from 'react';
 import { ChevronDown, ChevronRight, Cpu } from 'lucide-react';
+import * as Icons from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import logo from '../img/logo.png';
-import { services } from '../data/services';
 import GooeyNav from './nav';
+
+type Service = {
+  id: string;
+  iconName: string;
+  title: string;
+  description: string;
+  color: string;
+  slug: string;
+  fullDescription?: string;
+  features?: string[];
+  useCases?: string[];
+  technologies?: string[];
+};
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false);
   const [isLogoHovered, setIsLogoHovered] = useState(false);
+  const [services, setServices] = useState<Service[]>([]);
   const location = useLocation();
   const mobileDropdownRef = useRef<HTMLDivElement>(null);
   const logoContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+        const response = await fetch(`${apiBase}/services`);
+        if (!response.ok) throw new Error('Failed to fetch services');
+        const data = await response.json();
+        setServices(data);
+      } catch (error) {
+        console.error('Error fetching services:', error);
+        setServices([]);
+      }
+    };
+    fetchServices();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -379,7 +409,7 @@ export default function Navbar() {
                     >
                       <div className="max-h-56 sm:max-h-64 overflow-y-auto pr-0.5 sm:pr-1">
                         {services.map((service, index) => {
-                          const Icon = service.icon;
+                          const Icon = (Icons as Record<string, any>)[service.iconName] || Icons.Code;
                           return (
                             <motion.div
                               key={service.slug}

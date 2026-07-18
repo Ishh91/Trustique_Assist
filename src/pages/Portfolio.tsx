@@ -1,9 +1,21 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ExternalLink, ArrowRight, Eye, Code, Smartphone, Globe, Database, Users, Calendar, Target } from 'lucide-react';
-import { portfolio } from '../data/portfolio';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import SEO from '../components/SEO';
+
+type PortfolioItem = {
+  id: string;
+  title: string;
+  client: string;
+  description: string;
+  category: string;
+  tags: string[];
+  slug: string;
+  completed?: string;
+  views?: string;
+  liveUrl?: string;
+};
 
 // Animation variants
 const fadeInUp = {
@@ -44,6 +56,28 @@ const categoryIcons = {
 // Animated Background Orbs
 
 export default function Portfolio() {
+  const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPortfolio = async () => {
+      try {
+        const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+        const response = await fetch(`${apiBase}/portfolio`);
+        if (!response.ok) throw new Error('Failed to fetch portfolio');
+        const data = await response.json();
+        setPortfolio(data);
+      } catch (error) {
+        console.error('Error fetching portfolio:', error);
+        // Fallback to empty array if API fails
+        setPortfolio([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPortfolio();
+  }, []);
+
   return (
     <>
       <SEO 

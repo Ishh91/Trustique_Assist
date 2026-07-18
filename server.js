@@ -144,6 +144,42 @@ const testimonialSchema = new mongoose.Schema({
 
 const Testimonial = mongoose.model('Testimonial', testimonialSchema);
 
+// Portfolio Item Schema
+const portfolioItemSchema = new mongoose.Schema({
+  id: { type: String, required: true, unique: true },
+  title: { type: String, required: true },
+  client: { type: String, required: true },
+  description: { type: String, required: true },
+  category: { type: String, required: true },
+  tags: { type: [String], default: [] },
+  slug: { type: String, required: true, unique: true },
+  completed: { type: String },
+  views: { type: String },
+  liveUrl: { type: String },
+}, {
+  timestamps: true
+});
+
+const PortfolioItem = mongoose.model('PortfolioItem', portfolioItemSchema);
+
+// Service Schema
+const serviceSchema = new mongoose.Schema({
+  id: { type: String, required: true, unique: true },
+  iconName: { type: String, required: true }, // Store icon name as string
+  title: { type: String, required: true },
+  description: { type: String, required: true },
+  color: { type: String, required: true },
+  slug: { type: String, required: true, unique: true },
+  fullDescription: { type: String },
+  features: { type: [String], default: [] },
+  useCases: { type: [String], default: [] },
+  technologies: { type: [String], default: [] },
+}, {
+  timestamps: true
+});
+
+const Service = mongoose.model('Service', serviceSchema);
+
 // Admin Schema
 const adminSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
@@ -232,6 +268,98 @@ async function seedAdmin() {
     }
   } catch (err) {
     console.error('❌ Error seeding admin user:', err);
+  }
+}
+
+// Seed function to seed portfolio items
+async function seedPortfolio() {
+  try {
+    const count = await PortfolioItem.countDocuments();
+    if (count > 0) {
+      console.log('Portfolio collection already contains data, skipping seed.');
+      return;
+    }
+
+    const initialPortfolio = [
+      {
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        title: 'Website & Social Media Management for NGO',
+        client: 'Samvedana Mahila Utthana Samiti',
+        description: 'Developing and managing the website and social media presence for Samvedana Mahila Utthana Samiti, an NGO focused on women empowerment and community development.',
+        category: 'Digital Presence',
+        tags: ['NGO', 'Website', 'Social Media', 'Community'],
+        slug: 'website-and-social-media-management-for-samvedana-mahila-utthana-samiti',
+        completed: '2024',
+        views: 'Live Project',
+      },
+      {
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        title: 'IoT-based Software Solution',
+        client: 'SafeSense Tech Pvt. Ltd.',
+        description: 'Developing an IoT-based software solution enabling smart automation, real-time monitoring, and data-driven decision-making.',
+        category: 'IoT & Automation',
+        tags: ['IoT', 'Automation', 'Monitoring', 'Data'],
+        slug: 'iot-based-software-solution-for-safesense-tech-pvt-ltd',
+        completed: '2024',
+        views: 'Live Project',
+      }
+    ];
+
+    for (const item of initialPortfolio) {
+      const newItem = new PortfolioItem(item);
+      await newItem.save();
+    }
+
+    console.log('✅ Portfolio items seeded successfully!');
+  } catch (err) {
+    console.error('❌ Error seeding portfolio:', err);
+  }
+}
+
+// Seed function to seed services
+async function seedServices() {
+  try {
+    const count = await Service.countDocuments();
+    if (count > 0) {
+      console.log('Services collection already contains data, skipping seed.');
+      return;
+    }
+
+    const initialServices = [
+      {
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        iconName: 'Code',
+        title: 'Custom Web Development',
+        description: 'Bespoke website solutions engineered for peak performance, seamless user journeys, and conversion optimization.',
+        color: 'from-blue-500 to-blue-600',
+        slug: 'custom-web-development',
+        fullDescription: 'We architect and develop custom websites that serve as powerful digital assets for your business.',
+        features: ['Custom CMS development', 'E-commerce platform integration', 'API development and integration'],
+        useCases: ['Corporate websites and landing pages', 'E-commerce stores and marketplaces'],
+        technologies: ['React.js', 'Next.js', 'Node.js'],
+      },
+      {
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        iconName: 'Smartphone',
+        title: 'Mobile App Development',
+        description: 'Native and cross-platform mobile experiences that captivate users and drive measurable business outcomes.',
+        color: 'from-purple-500 to-purple-600',
+        slug: 'mobile-app-development',
+        fullDescription: 'We create immersive mobile applications that deliver exceptional user experiences across iOS and Android platforms.',
+        features: ['Native iOS and Android development', 'Cross-platform React Native/Flutter apps'],
+        useCases: ['Consumer-facing mobile applications', 'Enterprise productivity tools'],
+        technologies: ['React Native', 'Flutter', 'Swift'],
+      }
+    ];
+
+    for (const service of initialServices) {
+      const newService = new Service(service);
+      await newService.save();
+    }
+
+    console.log('✅ Services seeded successfully!');
+  } catch (err) {
+    console.error('❌ Error seeding services:', err);
   }
 }
 
@@ -533,6 +661,198 @@ app.get('/api/admin/testimonials', authenticateAdmin, async (req, res) => {
   }
 });
 
+// Portfolio API Routes
+// Get all portfolio items
+app.get('/api/portfolio', async (req, res) => {
+  try {
+    const portfolio = await PortfolioItem.find().sort({ createdAt: -1 });
+    res.json(portfolio);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get single portfolio item by slug
+app.get('/api/portfolio/:slug', async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const item = await PortfolioItem.findOne({ slug });
+    if (item) {
+      return res.json(item);
+    }
+    res.status(404).json({ error: 'Portfolio item not found' });
+  } catch (err) {
+    res.status(404).json({ error: 'Portfolio item not found' });
+  }
+});
+
+// Admin Portfolio Routes
+// Create new portfolio item
+app.post('/api/admin/portfolio', authenticateAdmin, async (req, res) => {
+  try {
+    const { title, client, description, category, tags, completed, views, liveUrl } = req.body;
+    if (!title || !client || !description || !category) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+    const slug = generateSlug(title);
+    const id = Date.now().toString();
+    const newItem = new PortfolioItem({
+      id, title, client, description, category,
+      tags: tags ? tags.split(',').map(t => t.trim()).filter(t => t) : [],
+      slug, completed, views, liveUrl
+    });
+    await newItem.save();
+    res.json({ id, slug, message: 'Portfolio item created successfully' });
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(409).json({ error: 'A portfolio item with this title already exists' });
+    }
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update portfolio item
+app.put('/api/admin/portfolio/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, client, description, category, tags, completed, views, liveUrl } = req.body;
+    const updateData = {};
+    if (title) { updateData.title = title; updateData.slug = generateSlug(title); }
+    if (client) updateData.client = client;
+    if (description) updateData.description = description;
+    if (category) updateData.category = category;
+    if (tags !== undefined) updateData.tags = tags.split(',').map(t => t.trim()).filter(t => t);
+    if (completed !== undefined) updateData.completed = completed;
+    if (views !== undefined) updateData.views = views;
+    if (liveUrl !== undefined) updateData.liveUrl = liveUrl;
+
+    const updatedItem = await PortfolioItem.findOneAndUpdate({ id }, updateData, { new: true });
+    if (!updatedItem) return res.status(404).json({ error: 'Portfolio item not found' });
+    res.json({ message: 'Portfolio item updated successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete portfolio item
+app.delete('/api/admin/portfolio/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedItem = await PortfolioItem.findOneAndDelete({ id });
+    if (!deletedItem) return res.status(404).json({ error: 'Portfolio item not found' });
+    res.json({ message: 'Portfolio item deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get all portfolio items (admin view)
+app.get('/api/admin/portfolio', authenticateAdmin, async (req, res) => {
+  try {
+    const portfolio = await PortfolioItem.find().sort({ createdAt: -1 });
+    res.json(portfolio);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Services API Routes
+// Get all services
+app.get('/api/services', async (req, res) => {
+  try {
+    const services = await Service.find().sort({ createdAt: -1 });
+    res.json(services);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get single service by slug
+app.get('/api/services/:slug', async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const service = await Service.findOne({ slug });
+    if (service) {
+      return res.json(service);
+    }
+    res.status(404).json({ error: 'Service not found' });
+  } catch (err) {
+    res.status(404).json({ error: 'Service not found' });
+  }
+});
+
+// Admin Services Routes
+// Create new service
+app.post('/api/admin/services', authenticateAdmin, async (req, res) => {
+  try {
+    const { iconName, title, description, color, fullDescription, features, useCases, technologies } = req.body;
+    if (!iconName || !title || !description || !color) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+    const slug = generateSlug(title);
+    const id = Date.now().toString();
+    const newService = new Service({
+      id, iconName, title, description, color,
+      slug, fullDescription,
+      features: features ? features.split(',').map(f => f.trim()).filter(f => f) : [],
+      useCases: useCases ? useCases.split(',').map(u => u.trim()).filter(u => u) : [],
+      technologies: technologies ? technologies.split(',').map(t => t.trim()).filter(t => t) : []
+    });
+    await newService.save();
+    res.json({ id, slug, message: 'Service created successfully' });
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(409).json({ error: 'A service with this title already exists' });
+    }
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update service
+app.put('/api/admin/services/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { iconName, title, description, color, fullDescription, features, useCases, technologies } = req.body;
+    const updateData = {};
+    if (iconName) updateData.iconName = iconName;
+    if (title) { updateData.title = title; updateData.slug = generateSlug(title); }
+    if (description) updateData.description = description;
+    if (color) updateData.color = color;
+    if (fullDescription !== undefined) updateData.fullDescription = fullDescription;
+    if (features !== undefined) updateData.features = features.split(',').map(f => f.trim()).filter(f => f);
+    if (useCases !== undefined) updateData.useCases = useCases.split(',').map(u => u.trim()).filter(u => u);
+    if (technologies !== undefined) updateData.technologies = technologies.split(',').map(t => t.trim()).filter(t => t);
+
+    const updatedService = await Service.findOneAndUpdate({ id }, updateData, { new: true });
+    if (!updatedService) return res.status(404).json({ error: 'Service not found' });
+    res.json({ message: 'Service updated successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete service
+app.delete('/api/admin/services/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedService = await Service.findOneAndDelete({ id });
+    if (!deletedService) return res.status(404).json({ error: 'Service not found' });
+    res.json({ message: 'Service deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get all services (admin view)
+app.get('/api/admin/services', authenticateAdmin, async (req, res) => {
+  try {
+    const services = await Service.find().sort({ createdAt: -1 });
+    res.json(services);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Catch-all middleware for client-side routing (must come after API routes)
 app.use((req, res, next) => {
   // Only handle GET requests for non-API routes
@@ -556,12 +876,16 @@ async function startServer() {
     console.log('✅ Connected to MongoDB');
     await seedTestimonials();
     await seedAdmin();
+    await seedPortfolio();
+    await seedServices();
 
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`📝 Blog API available at http://localhost:${PORT}/api/blog`);
       console.log(`⭐ Testimonials API available at http://localhost:${PORT}/api/testimonials`);
+      console.log(`📁 Portfolio API available at http://localhost:${PORT}/api/portfolio`);
+      console.log(`🔧 Services API available at http://localhost:${PORT}/api/services`);
       console.log(`🏥 Health check available at http://localhost:${PORT}/health`);
       console.log(`📄 Frontend (production build): http://localhost:${PORT}`);
     });

@@ -1,9 +1,45 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { services } from '../data/services';
+import { useEffect, useState } from 'react';
+import * as Icons from 'lucide-react';
 import SEO from './SEO';
 
+type Service = {
+  id: string;
+  iconName: string;
+  title: string;
+  description: string;
+  color: string;
+  slug: string;
+  fullDescription?: string;
+  features?: string[];
+  useCases?: string[];
+  technologies?: string[];
+};
+
 export default function Services() {
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+        const response = await fetch(`${apiBase}/services`);
+        if (!response.ok) throw new Error('Failed to fetch services');
+        const data = await response.json();
+        setServices(data);
+      } catch (error) {
+        console.error('Error fetching services:', error);
+        // Fallback to empty array if API fails
+        setServices([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchServices();
+  }, []);
+
   return (
     <>
       <SEO 
@@ -31,7 +67,7 @@ export default function Services() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => {
-            const Icon = service.icon;
+            const Icon = (Icons as Record<string, any>)[service.iconName] || Icons.Code;
             
             return (
               <motion.div

@@ -1,8 +1,21 @@
 import { motion } from 'framer-motion';
 import { useParams, Link } from 'react-router-dom';
-import { services } from '../data/services';
+import * as Icons from 'lucide-react';
 import { ArrowRight, CheckCircle, Clock, Users, Zap, Shield, Target } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+
+type Service = {
+  id: string;
+  iconName: string;
+  title: string;
+  description: string;
+  color: string;
+  slug: string;
+  fullDescription?: string;
+  features?: string[];
+  useCases?: string[];
+  technologies?: string[];
+};
 
 // Particle Background Component for Service Pages
 const ServiceParticleBackground = () => {
@@ -27,9 +40,9 @@ const ServiceParticleBackground = () => {
     const canvas = canvasRef.current;
     if (!canvas || !dimensions.width || !dimensions.height) return;
 
-    const ctx = canvas.getContext('2d');
-    canvas.width = dimensions.width;
-    canvas.height = dimensions.height;
+    const ctx = (canvas as HTMLCanvasElement).getContext('2d');
+    (canvas as HTMLCanvasElement).width = dimensions.width;
+    (canvas as HTMLCanvasElement).height = dimensions.height;
 
     class Particle {
       x: number;
@@ -75,7 +88,11 @@ const ServiceParticleBackground = () => {
       }
     }
 
-    const particles: { y: any; }[] = [];
+    const particles: {
+      x: any;
+      update(): unknown;
+      draw(): unknown; y: any; 
+}[] = [];
     const particleCount = Math.min(60, Math.floor((dimensions.width * dimensions.height) / 20000));
 
     for (let i = 0; i < particleCount; i++) {
@@ -101,7 +118,7 @@ const ServiceParticleBackground = () => {
       }
     };
 
-    let animationFrameId;
+    let animationFrameId: number;
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -249,7 +266,51 @@ const scaleIn = {
 
 export default function ServiceDetail() {
   const { slug } = useParams();
-  const service = services.find((s) => s.slug === slug);
+  const [service, setService] = useState<Service | null>(null);
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchService = async () => {
+      try {
+        const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+        const [serviceRes, servicesRes] = await Promise.all([
+          fetch(`${apiBase}/services/${slug}`),
+          fetch(`${apiBase}/services`)
+        ]);
+        if (serviceRes.ok && servicesRes.ok) {
+          const serviceData = await serviceRes.json();
+          const servicesData = await servicesRes.json();
+          setService(serviceData);
+          setServices(servicesData);
+        } else {
+          setService(null);
+        }
+      } catch (error) {
+        console.error('Error fetching service:', error);
+        setService(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (slug) {
+      fetchService();
+    }
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="px-4 sm:px-6 lg:px-8 py-24 relative z-10">
+        <motion.h2 
+          className="text-3xl font-bold mb-6 text-text-white"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          Loading...
+        </motion.h2>
+      </div>
+    );
+  }
 
   if (!service) {
     return (
@@ -268,7 +329,7 @@ export default function ServiceDetail() {
     );
   }
 
-  const Icon = service.icon;
+  const Icon = (Icons as Record<string, any>)[service.iconName] || Icons.Code;
 
   return (
     <div className="relative min-h-screen bg-bg-main">
@@ -552,7 +613,7 @@ export default function ServiceDetail() {
                 .filter(s => s.slug !== service.slug)
                 .slice(0, 3)
                 .map((relatedService, index) => {
-                  const RelatedIcon = relatedService.icon;
+                  const RelatedIcon = (Icons as Record<string, any>)[relatedService.iconName] || Icons.Code;
                   return (
                     <motion.div
                       key={relatedService.slug}
