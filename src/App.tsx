@@ -3,7 +3,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import About from './components/About';
 import Contact from './components/Contact';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import ServicesPage from './pages/ServicesPage';
 import ServiceDetail from './pages/ServiceDetail';
@@ -108,6 +108,8 @@ const LazyRoute = ({ component: Component, ...props }: any) => {
 
 function App() {
   const isMobile = useMobile();
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
   return (
     <ErrorBoundary>
@@ -134,13 +136,15 @@ function App() {
           zIndex={1}
         />
         
-        {/* Navbar with mobile menu */}
-        <div className="relative z-20">
-          <Navbar />
-        </div>
+        {/* Navbar with mobile menu - only on non-admin routes */}
+        {!isAdminRoute && (
+          <div className="relative z-20">
+            <Navbar />
+          </div>
+        )}
 
         {/* Main content with proper spacing */}
-        <main className="flex-1 relative z-10 pt-16 md:pt-20">
+        <main className={`flex-1 relative z-10 ${!isAdminRoute ? 'pt-16 md:pt-20' : ''}`}>
             <Routes>
               <Route 
                 path="/" 
@@ -224,10 +228,12 @@ function App() {
             </Routes>
         </main>
 
-        {/* Footer */}
-        <div className="relative z-20">
-          <Footer />
-        </div>
+        {/* Footer - only on non-admin routes */}
+        {!isAdminRoute && (
+          <div className="relative z-20">
+            <Footer />
+          </div>
+        )}
 
         {/* Mobile-specific optimizations */}
         {isMobile && (
