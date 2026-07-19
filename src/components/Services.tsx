@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import * as Icons from 'lucide-react';
 import SEO from './SEO';
+import { services as staticServices } from '../data/services';
 
 type Service = {
   id: string;
@@ -30,9 +31,21 @@ export default function Services() {
         const data = await response.json();
         setServices(data);
       } catch (error) {
-        console.error('Error fetching services:', error);
-        // Fallback to empty array if API fails
-        setServices([]);
+        console.error('Error fetching services, using static data:', error);
+        // Convert static data to match the new API format
+        const convertedStaticServices = staticServices.map((service, idx) => ({
+          id: service.id || idx.toString(),
+          iconName: service.icon.name, // Get icon name from static service's icon component
+          title: service.title,
+          description: service.description,
+          color: service.color,
+          slug: service.slug,
+          fullDescription: service.fullDescription,
+          features: service.features,
+          useCases: service.useCases,
+          technologies: service.technologies
+        }));
+        setServices(convertedStaticServices);
       } finally {
         setLoading(false);
       }

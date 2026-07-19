@@ -17,6 +17,49 @@ interface BlogPost {
   publishedAt?: string;
 }
 
+// Static fallback blog data
+const staticBlogPosts: BlogPost[] = [
+  {
+    id: '1',
+    title: 'Building Scalable Web Applications with React & Node.js',
+    slug: 'building-scalable-web-applications',
+    excerpt: 'Learn the best practices for building scalable, performant web applications using React and Node.js in this comprehensive guide.',
+    content: 'Full content here...',
+    author: 'Trustique Team',
+    tags: ['React', 'Node.js', 'Web Development'],
+    published: true,
+    createdAt: new Date('2024-01-15').toISOString(),
+    updatedAt: new Date('2024-01-15').toISOString(),
+    publishedAt: new Date('2024-01-15').toISOString()
+  },
+  {
+    id: '2',
+    title: 'Introduction to Artificial Intelligence & Machine Learning',
+    slug: 'introduction-to-ai-ml',
+    excerpt: 'A beginner-friendly guide to understanding the fundamentals of artificial intelligence and machine learning technologies.',
+    content: 'Full content here...',
+    author: 'Trustique Team',
+    tags: ['AI', 'Machine Learning', 'Technology'],
+    published: true,
+    createdAt: new Date('2024-01-10').toISOString(),
+    updatedAt: new Date('2024-01-10').toISOString(),
+    publishedAt: new Date('2024-01-10').toISOString()
+  },
+  {
+    id: '3',
+    title: 'Cloud Migration Strategies for Modern Businesses',
+    slug: 'cloud-migration-strategies',
+    excerpt: 'Explore proven strategies and best practices for migrating your business applications to the cloud efficiently and securely.',
+    content: 'Full content here...',
+    author: 'Trustique Team',
+    tags: ['Cloud', 'AWS', 'Azure'],
+    published: true,
+    createdAt: new Date('2024-01-05').toISOString(),
+    updatedAt: new Date('2024-01-05').toISOString(),
+    publishedAt: new Date('2024-01-05').toISOString()
+  }
+];
+
 export default function Blog() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,15 +90,47 @@ export default function Blog() {
         throw new Error('Unexpected non-JSON response from blog list');
       }
       const data = await response.json();
-      setPosts(data);
+      
+      // Filter posts if search or tag is selected
+      let filteredPosts = [...data];
+      if (searchTerm) {
+        filteredPosts = filteredPosts.filter(post => 
+          post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          post.excerpt.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+      if (selectedTag) {
+        filteredPosts = filteredPosts.filter(post => post.tags.includes(selectedTag));
+      }
+      
+      setPosts(filteredPosts);
       
       // Extract unique tags from posts
       const allTags = data.flatMap((post: BlogPost) => post.tags || []);
       const uniqueTags = [...new Set(allTags)];
-      setAvailableTags(uniqueTags);
+      setAvailableTags(uniqueTags as string[]);
     } catch (error) {
-      console.error('Error fetching posts:', error);
-      setError('Failed to load blog posts');
+      console.error('Error fetching posts, using static data:', error);
+      
+      // Use static fallback data
+      let filteredPosts = [...staticBlogPosts];
+      if (searchTerm) {
+        filteredPosts = filteredPosts.filter(post => 
+          post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          post.excerpt.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+      if (selectedTag) {
+        filteredPosts = filteredPosts.filter(post => post.tags.includes(selectedTag));
+      }
+      
+      setPosts(filteredPosts);
+      
+      // Extract tags from static data
+      const allTags = staticBlogPosts.flatMap(post => post.tags || []);
+      const uniqueTags = [...new Set(allTags)];
+      setAvailableTags(uniqueTags);
+      setError(null); // Clear error since we have fallback data
     } finally {
       setLoading(false);
     }

@@ -5,6 +5,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import logo from '../img/logo.png';
 import GooeyNav from './nav';
+import { services as staticServices } from '../data/services';
 
 type Service = {
   id: string;
@@ -38,8 +39,21 @@ export default function Navbar() {
         const data = await response.json();
         setServices(data);
       } catch (error) {
-        console.error('Error fetching services:', error);
-        setServices([]);
+        console.error('Error fetching services, using static data:', error);
+        // Convert static data to match the new API format
+        const convertedStaticServices = staticServices.map((service, idx) => ({
+          id: service.id || idx.toString(),
+          iconName: service.icon.name, // Get icon name from static service's icon component
+          title: service.title,
+          description: service.description,
+          color: service.color,
+          slug: service.slug,
+          fullDescription: service.fullDescription,
+          features: service.features,
+          useCases: service.useCases,
+          technologies: service.technologies
+        }));
+        setServices(convertedStaticServices);
       }
     };
     fetchServices();

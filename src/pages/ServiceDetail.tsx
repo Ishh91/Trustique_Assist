@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import * as Icons from 'lucide-react';
 import { ArrowRight, CheckCircle, Clock, Users, Zap, Shield, Target } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { services as staticServices } from '../data/services';
 
 type Service = {
   id: string;
@@ -284,11 +285,26 @@ export default function ServiceDetail() {
           setService(serviceData);
           setServices(servicesData);
         } else {
-          setService(null);
+          throw new Error('API failed');
         }
       } catch (error) {
-        console.error('Error fetching service:', error);
-        setService(null);
+        console.error('Error fetching service, using static data:', error);
+        // Convert static data to match the new API format
+        const convertedStaticServices = staticServices.map((service, idx) => ({
+          id: service.id || idx.toString(),
+          iconName: service.icon.name, // Get icon name from static service's icon component
+          title: service.title,
+          description: service.description,
+          color: service.color,
+          slug: service.slug,
+          fullDescription: service.fullDescription,
+          features: service.features,
+          useCases: service.useCases,
+          technologies: service.technologies
+        }));
+        setServices(convertedStaticServices);
+        const foundService = convertedStaticServices.find(s => s.slug === slug);
+        setService(foundService || null);
       } finally {
         setLoading(false);
       }
@@ -427,7 +443,7 @@ export default function ServiceDetail() {
                     initial="initial"
                     animate="animate"
                   >
-                    {service.features.map((feature, index) => (
+                    {service.features.map((feature) => (
                       <motion.div
                         key={feature}
                         variants={scaleIn}

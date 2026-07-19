@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ExternalLink, ArrowRight, Eye, Code, Smartphone, Globe, Database, Users, Calendar, Target } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import SEO from '../components/SEO';
+import { portfolio as staticPortfolio } from '../data/portfolio';
 
 type PortfolioItem = {
   id: string;
@@ -68,9 +69,9 @@ export default function Portfolio() {
         const data = await response.json();
         setPortfolio(data);
       } catch (error) {
-        console.error('Error fetching portfolio:', error);
-        // Fallback to empty array if API fails
-        setPortfolio([]);
+        console.error('Error fetching portfolio, using static data:', error);
+        // Use static data as fallback
+        setPortfolio(staticPortfolio);
       } finally {
         setLoading(false);
       }

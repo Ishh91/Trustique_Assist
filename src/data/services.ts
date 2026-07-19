@@ -2,6 +2,7 @@ import { Code, Database, Cloud, Shield, Smartphone, Zap, Layers, PenTool, Briefc
 import { toSlug } from '../utils/slug';
 
 export type Service = {
+  [x: string]: string;
   icon: React.ComponentType<{ size?: number; className?: string }>;
   title: string;
   description: string;
