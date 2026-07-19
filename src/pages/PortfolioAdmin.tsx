@@ -125,13 +125,16 @@ const PortfolioAdmin: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
+    <div className="min-h-screen bg-bg-main py-8">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Portfolio Admin</h1>
+          <div>
+            <h1 className="text-3xl font-bold text-text-white">Portfolio Admin</h1>
+            <p className="mt-2 text-text-muted">Manage your portfolio items</p>
+          </div>
           <button
             onClick={() => setShowForm(true)}
-            className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-4 py-2 rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-colors flex items-center gap-2"
+            className="bg-gradient-to-r from-primary to-primary-gradient text-white px-4 py-2 rounded-lg hover:shadow-lg transition-colors flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             New Item
@@ -139,49 +142,49 @@ const PortfolioAdmin: React.FC = () => {
         </div>
 
         {loading ? (
-          <div className="text-center py-8">Loading...</div>
+          <div className="text-center py-8 text-text-muted">Loading...</div>
         ) : (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+          <div className="bg-bg-card rounded-lg shadow overflow-hidden border border-border-subtle">
+            <table className="min-w-full divide-y divide-border-subtle">
+              <thead className="bg-bg-secondary">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
                     Title
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
                     Client
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
                     Category
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-bg-card divide-y divide-border-subtle">
                 {portfolio.map((item) => (
                   <tr key={item.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{item.title}</div>
+                      <div className="text-sm font-medium text-text-white">{item.title}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text-white">
                       {item.client}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text-muted">
                       {item.category}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
                         <button
                           onClick={() => handleEdit(item)}
-                          className="text-indigo-600 hover:text-indigo-900"
+                          className="text-primary hover:text-primary-gradient"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(item.id)}
-                          className="text-red-600 hover:text-red-900"
+                          className="text-red-400 hover:text-red-300"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -193,7 +196,7 @@ const PortfolioAdmin: React.FC = () => {
             </table>
             
             {portfolio.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-text-muted">
                 No portfolio items found. Create your first one!
               </div>
             )}
@@ -213,11 +216,11 @@ const PortfolioAdmin: React.FC = () => {
             <motion.div
               initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}
-              className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+              className="bg-bg-card rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-border-subtle"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-2xl font-bold text-text-white">
                   {editingItem ? 'Edit Portfolio Item' : 'New Portfolio Item'}
                 </h2>
                 <button
@@ -225,7 +228,7 @@ const PortfolioAdmin: React.FC = () => {
                     setShowForm(false);
                     setEditingItem(null);
                   }}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-text-muted hover:text-text-white"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -233,7 +236,7 @@ const PortfolioAdmin: React.FC = () => {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text-muted mb-1">
                     Title *
                   </label>
                   <input
@@ -241,12 +244,12 @@ const PortfolioAdmin: React.FC = () => {
                     required
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border-subtle rounded-lg bg-bg-secondary text-text-white placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text-muted mb-1">
                     Client *
                   </label>
                   <input
@@ -254,12 +257,12 @@ const PortfolioAdmin: React.FC = () => {
                     required
                     value={formData.client}
                     onChange={(e) => setFormData({ ...formData, client: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border-subtle rounded-lg bg-bg-secondary text-text-white placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text-muted mb-1">
                     Description *
                   </label>
                   <textarea
@@ -267,12 +270,12 @@ const PortfolioAdmin: React.FC = () => {
                     rows={4}
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border-subtle rounded-lg bg-bg-secondary text-text-white placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text-muted mb-1">
                     Category *
                   </label>
                   <input
@@ -280,54 +283,54 @@ const PortfolioAdmin: React.FC = () => {
                     required
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border-subtle rounded-lg bg-bg-secondary text-text-white placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text-muted mb-1">
                     Tags (comma-separated)
                   </label>
                   <input
                     type="text"
                     value={formData.tags}
                     onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border-subtle rounded-lg bg-bg-secondary text-text-white placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-text-muted mb-1">
                       Completed Year
                     </label>
                     <input
                       type="text"
                       value={formData.completed}
                       onChange={(e) => setFormData({ ...formData, completed: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-border-subtle rounded-lg bg-bg-secondary text-text-white placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-text-muted mb-1">
                       Views Label
                     </label>
                     <input
                       type="text"
                       value={formData.views}
                       onChange={(e) => setFormData({ ...formData, views: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-border-subtle rounded-lg bg-bg-secondary text-text-white placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-text-muted mb-1">
                       Live URL
                     </label>
                     <input
                       type="url"
                       value={formData.liveUrl}
                       onChange={(e) => setFormData({ ...formData, liveUrl: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-border-subtle rounded-lg bg-bg-secondary text-text-white placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
                 </div>
@@ -339,13 +342,13 @@ const PortfolioAdmin: React.FC = () => {
                       setShowForm(false);
                       setEditingItem(null);
                     }}
-                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                    className="px-4 py-2 border border-border-subtle rounded-lg text-text-muted hover:bg-bg-secondary"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-md hover:from-cyan-600 hover:to-blue-600 flex items-center gap-2"
+                    className="px-4 py-2 bg-gradient-to-r from-primary to-primary-gradient text-white rounded-lg hover:shadow-lg flex items-center gap-2"
                   >
                     <Save className="w-4 h-4" />
                     {editingItem ? 'Update' : 'Create'}

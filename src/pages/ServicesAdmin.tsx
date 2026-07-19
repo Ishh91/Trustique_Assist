@@ -146,13 +146,16 @@ const ServicesAdmin: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
+    <div className="min-h-screen bg-bg-main py-8">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Services Admin</h1>
+          <div>
+            <h1 className="text-3xl font-bold text-text-white">Services Admin</h1>
+            <p className="mt-2 text-text-muted">Manage your services</p>
+          </div>
           <button
             onClick={() => setShowForm(true)}
-            className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-4 py-2 rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-colors flex items-center gap-2"
+            className="bg-gradient-to-r from-primary to-primary-gradient text-white px-4 py-2 rounded-lg hover:shadow-lg transition-colors flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             New Service
@@ -160,33 +163,33 @@ const ServicesAdmin: React.FC = () => {
         </div>
 
         {loading ? (
-          <div className="text-center py-8">Loading...</div>
+          <div className="text-center py-8 text-text-muted">Loading...</div>
         ) : (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+          <div className="bg-bg-card rounded-lg shadow overflow-hidden border border-border-subtle">
+            <table className="min-w-full divide-y divide-border-subtle">
+              <thead className="bg-bg-secondary">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
                     Title
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
                     Icon
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
                     Color
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-bg-card divide-y divide-border-subtle">
                 {services.map((service) => (
                   <tr key={service.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{service.title}</div>
+                      <div className="text-sm font-medium text-text-white">{service.title}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text-muted">
                       {service.iconName}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -196,13 +199,13 @@ const ServicesAdmin: React.FC = () => {
                       <div className="flex space-x-2">
                         <button
                           onClick={() => handleEdit(service)}
-                          className="text-indigo-600 hover:text-indigo-900"
+                          className="text-primary hover:text-primary-gradient"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(service.id)}
-                          className="text-red-600 hover:text-red-900"
+                          className="text-red-400 hover:text-red-300"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -214,7 +217,7 @@ const ServicesAdmin: React.FC = () => {
             </table>
             
             {services.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-text-muted">
                 No services found. Create your first one!
               </div>
             )}
@@ -234,11 +237,11 @@ const ServicesAdmin: React.FC = () => {
             <motion.div
               initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}
-              className="bg-white rounded-lg p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto"
+              className="bg-bg-card rounded-lg p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto border border-border-subtle"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-2xl font-bold text-text-white">
                   {editingService ? 'Edit Service' : 'New Service'}
                 </h2>
                 <button
@@ -246,7 +249,7 @@ const ServicesAdmin: React.FC = () => {
                     setShowForm(false);
                     setEditingService(null);
                   }}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-text-muted hover:text-text-white"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -255,14 +258,14 @@ const ServicesAdmin: React.FC = () => {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-text-muted mb-1">
                       Icon *
                     </label>
                     <select
                       required
                       value={formData.iconName}
                       onChange={(e) => setFormData({ ...formData, iconName: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-border-subtle rounded-lg bg-bg-secondary text-text-white focus:outline-none focus:ring-2 focus:ring-primary"
                     >
                       {availableIcons.map((icon) => (
                         <option key={icon} value={icon}>{icon}</option>
@@ -271,14 +274,14 @@ const ServicesAdmin: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-text-muted mb-1">
                       Color *
                     </label>
                     <select
                       required
                       value={formData.color}
                       onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-border-subtle rounded-lg bg-bg-secondary text-text-white focus:outline-none focus:ring-2 focus:ring-primary"
                     >
                       {availableColors.map((color) => (
                         <option key={color} value={color}>{color}</option>
@@ -288,7 +291,7 @@ const ServicesAdmin: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text-muted mb-1">
                     Title *
                   </label>
                   <input
@@ -296,12 +299,12 @@ const ServicesAdmin: React.FC = () => {
                     required
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border-subtle rounded-lg bg-bg-secondary text-text-white placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text-muted mb-1">
                     Short Description *
                   </label>
                   <textarea
@@ -309,55 +312,55 @@ const ServicesAdmin: React.FC = () => {
                     rows={3}
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border-subtle rounded-lg bg-bg-secondary text-text-white placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text-muted mb-1">
                     Full Description
                   </label>
                   <textarea
                     rows={5}
                     value={formData.fullDescription}
                     onChange={(e) => setFormData({ ...formData, fullDescription: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border-subtle rounded-lg bg-bg-secondary text-text-white placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text-muted mb-1">
                     Features (comma-separated)
                   </label>
                   <input
                     type="text"
                     value={formData.features}
                     onChange={(e) => setFormData({ ...formData, features: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border-subtle rounded-lg bg-bg-secondary text-text-white placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text-muted mb-1">
                     Use Cases (comma-separated)
                   </label>
                   <input
                     type="text"
                     value={formData.useCases}
                     onChange={(e) => setFormData({ ...formData, useCases: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border-subtle rounded-lg bg-bg-secondary text-text-white placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text-muted mb-1">
                     Technologies (comma-separated)
                   </label>
                   <input
                     type="text"
                     value={formData.technologies}
                     onChange={(e) => setFormData({ ...formData, technologies: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border-subtle rounded-lg bg-bg-secondary text-text-white placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
 
@@ -368,13 +371,13 @@ const ServicesAdmin: React.FC = () => {
                       setShowForm(false);
                       setEditingService(null);
                     }}
-                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                    className="px-4 py-2 border border-border-subtle rounded-lg text-text-muted hover:bg-bg-secondary"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-md hover:from-cyan-600 hover:to-blue-600 flex items-center gap-2"
+                    className="px-4 py-2 bg-gradient-to-r from-primary to-primary-gradient text-white rounded-lg hover:shadow-lg flex items-center gap-2"
                   >
                     <Save className="w-4 h-4" />
                     {editingService ? 'Update' : 'Create'}
