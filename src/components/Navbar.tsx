@@ -132,22 +132,21 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed w-full z-50 transition-all duration-500 ${
-        isScrolled
+      className={`fixed w-full z-50 transition-all duration-500 ${isScrolled
           ? 'bg-bg-card/98 backdrop-blur-2xl shadow-xl border-b border-border-subtle'
           : 'bg-transparent backdrop-blur-0 border-b border-transparent'
-      }`}
+        }`}
     >
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14 sm:h-16 md:h-18 lg:h-20">
           <div className="flex-shrink-0 flex items-center">
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className="flex items-center gap-2 sm:gap-2.5 md:gap-3 group"
               onMouseEnter={() => setIsLogoHovered(true)}
               onMouseLeave={() => setIsLogoHovered(false)}
             >
-              <motion.div 
+              <motion.div
                 ref={logoContainerRef}
                 className="relative flex items-center justify-center p-1.5 rounded-xl"
                 style={{
@@ -164,7 +163,7 @@ export default function Navbar() {
                     background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 50%, rgba(255,255,255,0.05) 100%)',
                   }}
                 />
-                
+
                 {/* Logo background circle - using white glow */}
                 <motion.div
                   className="absolute rounded-full"
@@ -176,13 +175,13 @@ export default function Navbar() {
                     background: 'radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 60%, transparent 100%)',
                   }}
                   initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ 
+                  animate={{
                     scale: isLogoHovered ? 1.2 : 0.9,
                     opacity: isLogoHovered ? 1 : 0.6
                   }}
                   transition={{ duration: 0.5, ease: "easeInOut" }}
                 />
-                
+
                 {/* Dot/Glow effect behind the logo - using white and cyan blend */}
                 <motion.div
                   className="absolute rounded-full"
@@ -195,13 +194,13 @@ export default function Navbar() {
                     filter: 'blur(20px)',
                   }}
                   initial={{ scale: 0.5, opacity: 0 }}
-                  animate={{ 
+                  animate={{
                     scale: isLogoHovered ? 1.2 : 0.5,
                     opacity: isLogoHovered ? 1 : 0
                   }}
                   transition={{ duration: 0.5, ease: "easeInOut" }}
                 />
-                
+
                 {/* Particle effects around the logo when hovered - using white for visibility */}
                 <AnimatePresence>
                   {isLogoHovered && (
@@ -223,23 +222,23 @@ export default function Navbar() {
                               marginTop: '-2px',
                               boxShadow: '0 0 6px rgba(255,255,255,0.6)',
                             }}
-                            initial={{ 
-                              x: 0, 
+                            initial={{
+                              x: 0,
                               y: 0,
                               scale: 0,
                               opacity: 0
                             }}
-                            animate={{ 
+                            animate={{
                               x: Math.cos(angle) * distance,
                               y: Math.sin(angle) * distance,
                               scale: 1,
                               opacity: [0, 1, 0]
                             }}
-                            exit={{ 
+                            exit={{
                               scale: 0,
                               opacity: 0
                             }}
-                            transition={{ 
+                            transition={{
                               duration: 0.8,
                               delay: i * 0.05,
                               repeat: Infinity,
@@ -252,14 +251,14 @@ export default function Navbar() {
                   )}
                 </AnimatePresence>
 
-                <img 
+                <img
                   src={logo}
-                  alt="Trustique Assist" 
+                  alt="Trustique Assist"
                   className="h-8 sm:h-10 md:h-12 w-auto object-contain relative z-10"
                 />
               </motion.div>
               <div className="flex flex-col">
-                <motion.h1 
+                <motion.h1
                   className="text-base sm:text-lg md:text-xl font-bold text-text-white leading-tight group-hover:text-primary transition-colors duration-300"
                   whileHover={{ scale: 1.02 }}
                 >
@@ -282,9 +281,9 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-4">
-            <GooeyNav 
-              items={navItems} 
-              initialActiveIndex={getInitialActiveIndex()} 
+            <GooeyNav
+              items={navItems}
+              initialActiveIndex={getInitialActiveIndex()}
               currentPath={location.pathname}
               particleDistances={[60, 10]}
               particleCount={12}
@@ -292,8 +291,8 @@ export default function Navbar() {
             />
 
             <motion.div whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.95 }} className="ml-2 sm:ml-4">
-              <Link 
-                to="/contact" 
+              <Link
+                to="/contact"
                 className="bg-gradient-to-r from-primary to-primary-gradient text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-sm shadow-lg hover:shadow-xl hover:from-[#0098a5] hover:to-[#35b8d9] transition-all duration-300 flex items-center gap-1.5 sm:gap-2"
               >
                 <span>Get Started</span>
@@ -314,20 +313,19 @@ export default function Navbar() {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={`p-2 sm:p-3 rounded-xl sm:rounded-2xl transition-all duration-500 relative overflow-hidden ${
-                isMobileMenuOpen
+              className={`p-2 sm:p-3 rounded-xl sm:rounded-2xl transition-all duration-500 relative overflow-hidden ${isMobileMenuOpen
                   ? 'bg-gradient-to-r from-primary/20 to-primary-gradient/20'
                   : 'hover:bg-bg-secondary'
-              }`}
+                }`}
             >
               <div className="flex flex-col items-center justify-center gap-1 sm:gap-1.5 w-5 sm:w-7 h-5 sm:h-7">
                 <motion.span
-                  animate={isMobileMenuOpen ? { 
-                    y: 8, 
+                  animate={isMobileMenuOpen ? {
+                    y: 8,
                     rotate: 45,
                     backgroundColor: '#FFFFFF'
-                  } : { 
-                    y: 0, 
+                  } : {
+                    y: 0,
                     rotate: 0,
                     backgroundColor: '#F5F7F8'
                   }}
@@ -335,10 +333,10 @@ export default function Navbar() {
                   className="w-full h-0.5 rounded-full"
                 />
                 <motion.span
-                  animate={isMobileMenuOpen ? { 
+                  animate={isMobileMenuOpen ? {
                     opacity: 0,
                     backgroundColor: '#FFFFFF'
-                  } : { 
+                  } : {
                     opacity: 1,
                     backgroundColor: '#F5F7F8'
                   }}
@@ -346,12 +344,12 @@ export default function Navbar() {
                   className="w-full h-0.5 rounded-full"
                 />
                 <motion.span
-                  animate={isMobileMenuOpen ? { 
-                    y: -8, 
+                  animate={isMobileMenuOpen ? {
+                    y: -8,
                     rotate: -45,
                     backgroundColor: '#FFFFFF'
-                  } : { 
-                    y: 0, 
+                  } : {
+                    y: 0,
                     rotate: 0,
                     backgroundColor: '#F5F7F8'
                   }}
@@ -387,20 +385,19 @@ export default function Navbar() {
                 { label: 'Home', to: '/' },
                 { label: 'About', to: '/about' },
               ].map((link, index) => (
-                <motion.div 
-                  key={link.to} 
-                  initial={{ opacity: 0, x: -30 }} 
-                  animate={{ opacity: 1, x: 0 }} 
+                <motion.div
+                  key={link.to}
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 + index * 0.08 }}
                   whileHover={{ x: 5 }}
                 >
                   <Link
                     to={link.to}
-                    className={`block px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-sm transition-all duration-300 relative overflow-hidden ${
-                      isActive(link.to)
+                    className={`block px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-sm transition-all duration-300 relative overflow-hidden ${isActive(link.to)
                         ? 'text-white bg-gradient-to-r from-primary/30 to-primary-gradient/30 border border-white/30'
                         : 'text-text-muted hover:text-white hover:bg-gradient-to-r hover:from-primary/20 hover:to-primary-gradient/20'
-                    }`}
+                      }`}
                     onClick={handleMobileLinkClick}
                   >
                     {isActive(link.to) && (
@@ -415,8 +412,8 @@ export default function Navbar() {
               ))}
 
               {/* Mobile Services Dropdown */}
-              <motion.div 
-                className="relative" 
+              <motion.div
+                className="relative"
                 ref={mobileDropdownRef}
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -467,7 +464,7 @@ export default function Navbar() {
                                 onClick={handleMobileLinkClick}
                               >
                                 <div className="flex-shrink-0">
-                                  <motion.div 
+                                  <motion.div
                                     className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-gradient-to-r from-primary to-primary-gradient flex items-center justify-center group-hover:scale-110 transition-all duration-300"
                                     whileHover={{ rotate: 10 }}
                                   >
@@ -488,7 +485,7 @@ export default function Navbar() {
                           );
                         })}
                       </div>
-                      
+
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -521,20 +518,19 @@ export default function Navbar() {
                 { label: 'Careers', to: '/careers' },
                 { label: 'Contact', to: '/contact' }
               ].map((link, index) => (
-                <motion.div 
-                  key={link.to} 
-                  initial={{ opacity: 0, x: -30 }} 
-                  animate={{ opacity: 1, x: 0 }} 
+                <motion.div
+                  key={link.to}
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.42 + index * 0.08 }}
                   whileHover={{ x: 5 }}
                 >
                   <Link
                     to={link.to}
-                    className={`block px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-sm transition-all duration-300 relative overflow-hidden ${
-                      isActive(link.to)
+                    className={`block px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-sm transition-all duration-300 relative overflow-hidden ${isActive(link.to)
                         ? 'text-white bg-gradient-to-r from-primary/30 to-primary-gradient/30 border border-white/30'
                         : 'text-text-muted hover:text-white hover:bg-gradient-to-r hover:from-primary/20 hover:to-primary-gradient/20'
-                    }`}
+                      }`}
                     onClick={handleMobileLinkClick}
                   >
                     {isActive(link.to) && (
@@ -549,14 +545,14 @@ export default function Navbar() {
               ))}
 
               {/* Get Started Button */}
-              <motion.div 
+              <motion.div
                 className="pt-4 sm:pt-5 border-t border-border-subtle mt-3 sm:mt-4"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.66, type: "spring", damping: 20 }}
               >
-                <Link 
-                  to="/contact" 
+                <Link
+                  to="/contact"
                   onClick={handleMobileLinkClick}
                 >
                   <motion.button

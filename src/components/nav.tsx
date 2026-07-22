@@ -1,24 +1,7 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useRef, useEffect, useState, MouseEvent, SetStateAction, KeyboardEvent, JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal } from 'react';
+import { Link, To } from 'react-router-dom';
 
-interface GooeyNavItem {
-  label: string;
-  href: string;
-}
-
-export interface GooeyNavProps {
-  items: GooeyNavItem[];
-  animationTime?: number;
-  particleCount?: number;
-  particleDistances?: [number, number];
-  particleR?: number;
-  timeVariance?: number;
-  colors?: number[];
-  initialActiveIndex?: number;
-  currentPath?: string;
-}
-
-const GooeyNav: React.FC<GooeyNavProps> = ({
+const GooeyNav = ({
   items,
   animationTime = 600,
   particleCount = 15,
@@ -29,16 +12,16 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
   initialActiveIndex = 0,
   currentPath
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const navRef = useRef<HTMLUListElement>(null);
-  const filterRef = useRef<HTMLSpanElement>(null);
-  const textRef = useRef<HTMLSpanElement>(null);
-  const [activeIndex, setActiveIndex] = useState<number>(initialActiveIndex);
+  const containerRef = useRef(null);
+  const navRef = useRef(null);
+  const filterRef = useRef(null);
+  const textRef = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(initialActiveIndex);
 
   // Update activeIndex when currentPath changes
   useEffect(() => {
     if (currentPath) {
-      const index = items.findIndex(item => {
+      const index = items.findIndex((item: { href: string; }) => {
         if (item.href === "/") return currentPath === "/";
         return currentPath.startsWith(item.href);
       });
@@ -47,11 +30,11 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
   }, [currentPath, items]);
 
   const noise = (n = 1) => n / 2 - Math.random() * n;
-  const getXY = (distance: number, pointIndex: number, totalPoints: number): [number, number] => {
+  const getXY = (distance: number, pointIndex: number, totalPoints: number) => {
     const angle = ((360 + noise(8)) / totalPoints) * pointIndex * (Math.PI / 180);
     return [distance * Math.cos(angle), distance * Math.sin(angle)];
   };
-  const createParticle = (i: number, t: number, d: [number, number], r: number) => {
+  const createParticle = (i: number, t: number, d: number[], r: number) => {
     let rotate = noise(r / 10);
     return {
       start: getXY(d[0], particleCount - i, particleCount),
@@ -62,8 +45,8 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
       rotate: rotate > 0 ? (rotate + r / 20) * 10 : (rotate - r / 20) * 10
     };
   };
-  const makeParticles = (element: HTMLElement) => {
-    const d: [number, number] = particleDistances;
+  const makeParticles = (element: never) => {
+    const d = particleDistances;
     const r = particleR;
     const bubbleTime = animationTime * 2 + timeVariance;
     element.style.setProperty('--time', `${bubbleTime}ms`);
@@ -92,12 +75,14 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
         setTimeout(() => {
           try {
             element.removeChild(particle);
-          } catch {}
+          } catch {
+            // do nothing
+          }
         }, t);
       }, 30);
     }
   };
-  const updateEffectPosition = (element: HTMLElement) => {
+  const updateEffectPosition = (element: { getBoundingClientRect: () => any; innerText: any; }) => {
     if (!containerRef.current || !filterRef.current || !textRef.current) return;
     const containerRect = containerRef.current.getBoundingClientRect();
     const pos = element.getBoundingClientRect();
@@ -111,15 +96,14 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
     Object.assign(textRef.current.style, styles);
     textRef.current.innerText = element.innerText;
   };
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, index: number) => {
-    const liEl = e.currentTarget.closest('li');
-    if (!liEl) return;
+  const handleClick = (e: MouseEvent<HTMLAnchorElement, MouseEvent>, index: SetStateAction<number>) => {
+    const liEl = e.currentTarget;
     if (activeIndex === index) return;
     setActiveIndex(index);
     updateEffectPosition(liEl);
     if (filterRef.current) {
       const particles = filterRef.current.querySelectorAll('.particle');
-      particles.forEach(p => filterRef.current!.removeChild(p));
+      particles.forEach((p: any) => filterRef.current.removeChild(p));
     }
     if (textRef.current) {
       textRef.current.classList.remove('active');
@@ -130,29 +114,24 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
       makeParticles(filterRef.current);
     }
   };
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLAnchorElement>, index: number) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLAnchorElement>, index: any) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      const liEl = e.currentTarget.closest('li');
+      const liEl = e.currentTarget.parentElement;
       if (liEl) {
-        handleClick(
-          {
-            currentTarget: e.currentTarget
-          } as React.MouseEvent<HTMLAnchorElement>,
-          index
-        );
+        handleClick({ currentTarget: liEl }, index);
       }
     }
   };
   useEffect(() => {
     if (!navRef.current || !containerRef.current) return;
-    const activeLi = navRef.current.querySelectorAll('li')[activeIndex] as HTMLElement;
+    const activeLi = navRef.current.querySelectorAll('li')[activeIndex];
     if (activeLi) {
       updateEffectPosition(activeLi);
       textRef.current?.classList.add('active');
     }
     const resizeObserver = new ResizeObserver(() => {
-      const currentActiveLi = navRef.current?.querySelectorAll('li')[activeIndex] as HTMLElement;
+      const currentActiveLi = navRef.current?.querySelectorAll('li')[activeIndex];
       if (currentActiveLi) {
         updateEffectPosition(currentActiveLi);
       }
@@ -163,13 +142,14 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
 
   return (
     <>
+      {/* This effect is quite difficult to recreate faithfully using Tailwind, so a style tag is a necessary workaround */}
       <style>
         {`
           :root {
             --linear-ease: linear(0, 0.068, 0.19 2.7%, 0.804 8.1%, 1.037, 1.199 13.2%, 1.245, 1.27 15.8%, 1.274, 1.272 17.4%, 1.249 19.1%, 0.996 28%, 0.949, 0.928 33.3%, 0.926, 0.933 36.8%, 1.001 45.6%, 1.013, 1.019 50.8%, 1.018 54.4%, 1 63.1%, 0.995 68%, 1.001 85%, 1);
-            --color-1: #00C8D7;
-            --color-2: #43E8FF;
-            --color-3: #007A87;
+            --color-1: #00c8d7;
+            --color-2: #43e8ff;
+            --color-3: #007a87;
             --color-4: #ffffff;
           }
           .effect {
@@ -178,14 +158,14 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
             pointer-events: none;
             display: grid;
             place-items: center;
-            z-index: 0;
+            z-index: 1;
           }
           .effect.text {
             color: #a0aec0;
             transition: color 0.3s ease;
           }
           .effect.text.active {
-            color: #00c8d7ff;
+            color: #00c8d7;
           }
           /* REMOVED the filter/pill background effect */
           .effect.filter {
@@ -259,7 +239,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
             }
           }
           li.active {
-            color: #00C8D7;
+            color: #00c8d7;
             text-shadow: none;
           }
           li.active::after {
@@ -271,7 +251,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
             position: absolute;
             inset: 0;
             border-radius: 8px;
-            background: linear-gradient(135deg, #00C8D7, #43E8FF);
+            background: linear-gradient(135deg, #00c8d7, #43e8ff);
             opacity: 0;
             transform: scale(0);
             transition: all 0.3s ease;
@@ -289,7 +269,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
               textShadow: '0 1px 1px hsl(205deg 30% 10% / 0.2)'
             }}
           >
-            {items.map((item, index) => (
+            {items.map((item: { href: To; label: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined; }, index: Key | null | undefined) => (
               <li
                 key={index}
                 className={`rounded-full relative cursor-pointer transition-[background-color_color_box-shadow] duration-300 ease shadow-[0_0_0.5px_1.5px_transparent] z-[25] ${
