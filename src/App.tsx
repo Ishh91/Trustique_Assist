@@ -158,10 +158,10 @@ function App() {
                 path="/services/:slug" 
                 element={<LazyRoute component={ServiceDetail} />} 
               />
-              <Route 
+              {/* <Route 
                 path="/portfolio" 
                 element={<LazyRoute component={Portfolio} />} 
-              />
+              /> */}
               <Route 
                 path="/about" 
                 element={<LazyRoute component={About} />} 

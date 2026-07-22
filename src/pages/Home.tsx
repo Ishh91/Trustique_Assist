@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Link as LinkIcon } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { 
   ArrowRight, CheckCircle, Code, Smartphone, Globe, Database, Cloud, Zap, 
@@ -814,22 +814,23 @@ export default function Home() {
                     {category.services.map((service, servIndex) => {
                       const Icon = service.icon;
                       return (
-                        <motion.div
-                          key={service.name}
-                          initial={{ opacity: 0, scale: 0.95 }}
-                          whileInView={{ opacity: 1, scale: 1 }}
-                          viewport={{ once: true }}
-                          transition={{ delay: catIndex * 0.1 + servIndex * 0.02 }}
-                          whileHover={{ scale: 1.02, borderColor: 'rgba(0, 200, 215, 0.5)' }}
-                          className="flex items-center gap-3 p-4 bg-bg-card rounded-xl border border-border-subtle hover:shadow-lg transition-all duration-300"
-                        >
-                          <div className="p-2 rounded-lg bg-gradient-to-r from-primary/10 to-primary-gradient/10">
-                            <Icon className="text-primary w-4 h-4" />
-                          </div>
-                          <span className="text-text-white text-sm font-medium">
-                            {service.name}
-                          </span>
-                        </motion.div>
+                        <Link key={service.name} to="/services">
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: catIndex * 0.1 + servIndex * 0.02 }}
+                            whileHover={{ scale: 1.02, borderColor: 'rgba(0, 200, 215, 0.5)' }}
+                            className="flex items-center gap-3 p-4 bg-bg-card rounded-xl border border-border-subtle hover:shadow-lg transition-all duration-300 cursor-pointer"
+                          >
+                            <div className="p-2 rounded-lg bg-gradient-to-r from-primary/10 to-primary-gradient/10">
+                              <Icon className="text-primary w-4 h-4" />
+                            </div>
+                            <span className="text-text-white text-sm font-medium">
+                              {service.name}
+                            </span>
+                          </motion.div>
+                        </Link>
                       );
                     })}
                   </div>

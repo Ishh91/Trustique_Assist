@@ -115,7 +115,6 @@ export default function Navbar() {
   const navItems = [
     { label: "Home", href: "/" },
     { label: "About", href: "/about" },
-    { label: "Portfolio", href: "/portfolio" },
     { label: "Services", href: "/services" },
     { label: "Blog", href: "/blog" },
     { label: "Careers", href: "/careers" },
@@ -190,7 +189,7 @@ export default function Navbar() {
                   style={{
                     width: 'calc(100% + 40px)',
                     height: 'calc(100% + 40px)',
-                    left: '-20px',
+                    left: '20px',
                     top: '-20px',
                     background: 'radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(0,200,215,0.2) 40%, transparent 70%)',
                     filter: 'blur(20px)',
@@ -387,7 +386,6 @@ export default function Navbar() {
               {[
                 { label: 'Home', to: '/' },
                 { label: 'About', to: '/about' },
-                { label: 'Portfolio', to: '/portfolio' }
               ].map((link, index) => (
                 <motion.div 
                   key={link.to} 
