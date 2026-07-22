@@ -203,7 +203,7 @@ const orbitStyles = `
     backdrop-filter: blur(12px);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     transition: all 0.3s ease;
-    cursor: default;
+    cursor: pointer;
     white-space: nowrap;
     transform: translate(-50%, -50%);
   }
@@ -402,8 +402,8 @@ export default function Hero() {
               <motion.h1
                 variants={fadeInUp}
                 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-text-white mb-4 md:mb-6 leading-tight"
-              >
-                Engineering Ideas
+              >One Team Every Solution.
+
                 <br className="hidden sm:block" />
                 <motion.span 
                   className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-gradient"
@@ -417,7 +417,7 @@ export default function Hero() {
                   }}
                   style={{ backgroundSize: '200% 200%' }}
                 >
-                  into Digital Reality.
+                  From Company Formation to Intelligent Automation.
                 </motion.span>
               </motion.h1>
 
@@ -493,7 +493,7 @@ export default function Hero() {
               {serviceItems.map((item, index) => {
                 const Icon = item.icon;
                 return (
-                  <div 
+                  <Link to="/services"
                     key={index}
                     className={`orbit-item ${item.className}`}
                   >
@@ -501,7 +501,7 @@ export default function Hero() {
                       <Icon />
                       <span>{item.label}</span>
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
 

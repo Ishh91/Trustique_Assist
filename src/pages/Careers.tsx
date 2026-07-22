@@ -209,13 +209,13 @@ export default function Careers() {
         keywords="trustique assist careers, job openings, tech jobs, software jobs, AI jobs, remote jobs India"
         url="https://trustiqueassist.com/careers"
       />
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+      <div className="min-h-screen bg-bg-main">
       {/* Hero Section */}
       <section className="relative py-24 overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-10 left-10 w-72 h-72 bg-[#0056D2]/5 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-10 right-10 w-96 h-96 bg-[#00FF88]/5 rounded-full blur-3xl"></div>
+          <div className="absolute top-10 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-10 right-10 w-96 h-96 bg-primary-gradient/5 rounded-full blur-3xl"></div>
         </div>
         
         <div className="relative px-4 sm:px-6 lg:px-8">
@@ -223,7 +223,7 @@ export default function Careers() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm text-[#0056D2] px-4 py-2 rounded-full mb-6 border border-white/20 shadow-lg"
+              className="inline-flex items-center gap-2 bg-bg-card/80 backdrop-blur-sm text-primary px-4 py-2 rounded-full mb-6 border border-border-subtle shadow-lg"
             >
               <Sparkles size={16} />
               <span className="text-sm font-medium">Join a mission-driven team</span>
@@ -233,10 +233,10 @@ export default function Careers() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-4xl md:text-6xl font-bold text-gray-900 mb-6"
+              className="text-3xl md:text-4xl lg:text-6xl font-bold text-text-white mb-6"
             >
               Build Your Career at{' '}
-              <span className="text-gradient bg-gradient-to-r from-[#0056D2] to-[#00FF88] bg-clip-text text-transparent">
+              <span className="text-gradient">
                 Trustique
               </span>
             </motion.h1>
@@ -245,7 +245,7 @@ export default function Careers() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-8"
+              className="text-base md:text-lg text-text-muted max-w-3xl mx-auto leading-relaxed mb-8"
             >
               Join us in building the future of digital solutions. Work on challenging projects, 
               learn from industry experts, and grow your career in a supportive environment.
@@ -259,7 +259,7 @@ export default function Careers() {
             >
               <button 
                 onClick={scrollToOpenRoles}
-                className="brand-gradient-bg text-white px-8 py-4 rounded-full hover:shadow-2xl hover:scale-105 transition-all duration-300 font-semibold flex items-center gap-2"
+                className="btn-primary rounded-full"
               >
                 Explore {openRoles.length} Open Roles
                 <ArrowRight size={18} />
@@ -269,7 +269,7 @@ export default function Careers() {
                   setSelectedRoleId('');
                   setIsFormOpen(true);
                 }}
-                className="border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-full hover:border-[#0056D2] hover:text-[#0056D2] transition-all duration-300 font-semibold"
+                className="btn-secondary rounded-full"
               >
                 General Application
               </button>
@@ -289,10 +289,10 @@ export default function Careers() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.5 + index * 0.1 }}
-                className="text-center p-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-white/20 shadow-lg"
+                className="surface-card p-6 text-center"
               >
-                <div className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{stat.number}</div>
-                <div className="text-gray-600 font-medium">{stat.label}</div>
+                <div className="text-3xl md:text-4xl font-bold text-text-white mb-2">{stat.number}</div>
+                <div className="text-text-muted font-medium">{stat.label}</div>
               </motion.div>
             ))}
           </motion.div>
@@ -300,7 +300,7 @@ export default function Careers() {
       </section>
 
       {/* Open Roles Section */}
-      <section id="open-roles" className="py-20 bg-white">
+      <section id="open-roles" className="py-20">
         <div className="px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -308,10 +308,10 @@ export default function Careers() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="section-heading mb-4">
               Open Positions ({openRoles.length} Roles)
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="section-subheading">
               Explore our current openings and find the perfect role to match your skills and ambitions.
             </p>
           </motion.div>
@@ -329,7 +329,7 @@ export default function Careers() {
                 <motion.div
                   key={role.id}
                   variants={fadeInUp}
-                  className="group relative bg-white/80 backdrop-blur-sm rounded-2xl border border-white/20 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
+                  className="group relative surface-card overflow-hidden"
                   whileHover={{ y: -8, scale: 1.02 }}
                   onMouseEnter={() => setHoveredRole(role.id)}
                   onMouseLeave={() => setHoveredRole(null)}
@@ -344,35 +344,35 @@ export default function Careers() {
                           <Icon className="text-white" size={24} />
                         </div>
                         <div>
-                          <h3 className="text-xl font-bold text-gray-900 group-hover:text-[#0056D2] transition-colors">
+                          <h3 className="text-xl font-bold text-text-white group-hover:text-primary transition-colors">
                             {role.title}
                           </h3>
-                          <p className="text-sm text-gray-600">{role.dept}</p>
+                          <p className="text-sm text-text-muted">{role.dept}</p>
                         </div>
                       </div>
-                      <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                      <span className="px-3 py-1 bg-bg-secondary text-primary rounded-full text-xs font-medium border border-border-subtle">
                         {role.type}
                       </span>
                     </div>
 
                     {/* Role Details */}
                     <div className="space-y-3 mb-4">
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <MapPin size={16} className="text-[#0056D2]" />
+                      <div className="flex items-center gap-2 text-text-muted">
+                        <MapPin size={16} className="text-primary" />
                         <span className="text-sm">{role.location}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <Clock size={16} className="text-[#0056D2]" />
+                      <div className="flex items-center gap-2 text-text-muted">
+                        <Clock size={16} className="text-primary" />
                         <span className="text-sm">{role.experience}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <Award size={16} className="text-[#0056D2]" />
-                        <span className="text-sm font-medium text-gray-900">{role.salary}</span>
+                      <div className="flex items-center gap-2 text-text-muted">
+                        <Award size={16} className="text-primary" />
+                        <span className="text-sm font-medium text-text-white">{role.salary}</span>
                       </div>
                     </div>
 
                     {/* Description */}
-                    <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-2">
+                    <p className="text-text-muted text-sm leading-relaxed mb-4 line-clamp-2">
                       {role.description}
                     </p>
 
@@ -381,13 +381,13 @@ export default function Careers() {
                       {role.tags.slice(0, 3).map((tag) => (
                         <span
                           key={tag}
-                          className="px-2 py-1 bg-gradient-to-r from-[#0056D2]/10 to-[#00FF88]/10 text-[#0056D2] rounded-full text-xs font-medium border border-[#0056D2]/20"
+                          className="px-2 py-1 brand-gradient-soft text-primary rounded-full text-xs font-medium border border-primary/20"
                         >
                           {tag}
                         </span>
                       ))}
                       {role.tags.length > 3 && (
-                        <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">
+                        <span className="px-2 py-1 bg-bg-secondary text-text-muted rounded-full text-xs border border-border-subtle">
                           +{role.tags.length - 3}
                         </span>
                       )}
@@ -400,12 +400,12 @@ export default function Careers() {
                           setSelectedRoleId(role.id);
                           setIsFormOpen(true);
                         }}
-                        className="text-[#0056D2] font-semibold flex items-center gap-2 group-hover:gap-3 transition-all duration-300 hover:text-[#0044a8]"
+                        className="text-primary font-semibold flex items-center gap-2 group-hover:gap-3 transition-all duration-300 hover:text-primary-gradient"
                       >
                         Apply Now
                         <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                       </button>
-                      <span className="text-gray-500 text-sm">Posted recently</span>
+                      <span className="text-text-muted text-sm">Posted recently</span>
                     </div>
                   </div>
                 </motion.div>
@@ -420,11 +420,11 @@ export default function Careers() {
             viewport={{ once: true }}
             className="text-center mt-12"
           >
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-white/20 shadow-lg p-8 max-w-2xl mx-auto">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
+            <div className="surface-card p-8 max-w-2xl mx-auto">
+              <h3 className="text-xl font-bold text-text-white mb-2">
                 Don't see the perfect role?
               </h3>
-              <p className="text-gray-600 mb-4">
+              <p className="text-text-muted mb-4">
                 We're always looking for talented people. Send us your resume and we'll contact you when a matching position opens up.
               </p>
               <button
@@ -432,7 +432,7 @@ export default function Careers() {
                   setSelectedRoleId('');
                   setIsFormOpen(true);
                 }}
-                className="brand-gradient-bg text-white px-6 py-3 rounded-full hover:shadow-lg hover:scale-105 transition-all duration-300 font-semibold"
+                className="btn-primary rounded-full"
               >
                 Submit General Application
               </button>
@@ -442,7 +442,7 @@ export default function Careers() {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
+      <section className="py-20 bg-bg-secondary/30">
         <div className="px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -450,10 +450,10 @@ export default function Careers() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="section-heading mb-4">
               Why Join Trustique?
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="section-subheading">
               We invest in our team's growth and well-being with comprehensive benefits and a supportive culture.
             </p>
           </motion.div>
@@ -471,18 +471,18 @@ export default function Careers() {
                 <motion.div
                   key={benefit.title}
                   variants={scaleIn}
-                  className="group bg-white/80 backdrop-blur-sm rounded-2xl border border-white/20 shadow-lg hover:shadow-2xl transition-all duration-300 p-6"
+                  className="group surface-card hover:shadow-xl transition-all duration-300"
                   whileHover={{ y: -5, scale: 1.02 }}
                 >
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-4 p-6">
                     <div className="p-3 rounded-xl brand-gradient-bg group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
                       <Icon className="text-white" size={24} />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-gray-900 mb-2">
+                      <h3 className="text-lg font-bold text-text-white mb-2">
                         {benefit.title}
                       </h3>
-                      <p className="text-gray-600 text-sm leading-relaxed">
+                      <p className="text-text-muted text-sm leading-relaxed">
                         {benefit.desc}
                       </p>
                     </div>
@@ -495,7 +495,7 @@ export default function Careers() {
       </section>
 
       {/* HR Contact Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20">
         <div className="px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -503,10 +503,10 @@ export default function Careers() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="section-heading mb-4">
               Get in Touch with HR
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="section-subheading">
               Have questions about our hiring process or want to discuss career opportunities? 
               Our HR team is here to help.
             </p>
@@ -518,7 +518,7 @@ export default function Careers() {
             viewport={{ once: true }}
             className="max-w-4xl mx-auto"
           >
-            <div className="bg-gradient-to-br from-[#0056D2] to-[#00FF88] rounded-3xl p-8 text-white relative overflow-hidden">
+            <div className="brand-gradient-bg rounded-3xl p-8 text-white relative overflow-hidden">
               {/* Background Pattern */}
               <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-0 left-0 w-32 h-32 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"></div>
@@ -551,7 +551,7 @@ export default function Careers() {
                     </div>
                     <a 
                       href="mailto:hr@trustiqueassist.com"
-                      className="inline-block mt-4 bg-white text-[#0056D2] px-4 py-2 rounded-full text-sm font-semibold hover:shadow-lg transition-all duration-300"
+                      className="inline-block mt-4 bg-white text-primary px-4 py-2 rounded-full text-sm font-semibold hover:shadow-lg transition-all duration-300"
                     >
                       Send Email
                     </a>
@@ -624,7 +624,7 @@ export default function Careers() {
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="brand-gradient-bg rounded-3xl p-12 text-center text-white relative overflow-hidden"
+            className="brand-gradient-bg rounded-3xl p-8 md:p-12 text-center text-white relative overflow-hidden shadow-xl"
           >
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-10">
@@ -662,14 +662,14 @@ export default function Careers() {
                     setSelectedRoleId('');
                     setIsFormOpen(true);
                   }}
-                  className="bg-white text-[#0056D2] px-8 py-4 rounded-full hover:shadow-2xl hover:scale-105 transition-all duration-300 font-semibold flex items-center gap-2"
+                  className="bg-white text-primary px-8 py-4 rounded-full hover:shadow-2xl hover:scale-105 transition-all duration-300 font-semibold flex items-center gap-2"
                 >
                   Apply Now
                   <ArrowRight size={20} />
                 </button>
                 <a
                   href="mailto:hr@trustiqueassist.com"
-                  className="border-2 border-white text-white px-8 py-4 rounded-full hover:bg-white hover:text-[#0056D2] transition-all duration-300 font-semibold"
+                  className="border-2 border-white text-white px-8 py-4 rounded-full hover:bg-white hover:text-primary transition-all duration-300 font-semibold"
                 >
                   Email HR Team
                 </a>

@@ -73,10 +73,11 @@ export default function Footer() {
 
   const footerLinks = {
     'Solutions': [
-      { name: 'Web Development', path: '/services/custom-web-development' },
-      { name: 'Mobile Apps', path: '/services/mobile-app-development' },
-      { name: 'AI Integration', path: '/services/ai-and-machine-learning-solutions' },
-      { name: 'Cloud Solutions', path: '/services/cloud-infrastructure-and-devops' }
+      { name: 'Software Development & Enterprise Solutions', path: '/services' },
+      { name: 'Cloud, Data Engineering, AI & Intelligent Automation', path: '/services' },
+      { name: 'Blockchain, Web3 & Extended Reality', path: '/services' },
+      { name: 'Digital Marketing, Branding & Creative Services', path: '/services' },
+      { name: 'Industry-Specific Solutions', path: '/services' }
     ],
     'Company': [
       { name: 'About Us', path: '/about' },
