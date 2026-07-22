@@ -185,7 +185,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
             transition: color 0.3s ease;
           }
           .effect.text.active {
-            color: #00C8D7;
+            color: #00c8d7ff;
           }
           /* REMOVED the filter/pill background effect */
           .effect.filter {

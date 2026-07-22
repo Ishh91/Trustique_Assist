@@ -150,11 +150,41 @@ export default function Navbar() {
             >
               <motion.div 
                 ref={logoContainerRef}
-                className="relative flex items-center justify-center"
+                className="relative flex items-center justify-center p-1.5 rounded-xl"
+                style={{
+                  background: '#00c8d7ff',
+                  boxShadow: '0 4px 20px rgba(0,200,215,0.4)',
+                }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                {/* Dot/Glow effect behind the logo */}
+                {/* Inner glow effect - using white for contrast */}
+                <motion.div
+                  className="absolute inset-0 rounded-xl"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 50%, rgba(255,255,255,0.05) 100%)',
+                  }}
+                />
+                
+                {/* Logo background circle - using white glow */}
+                <motion.div
+                  className="absolute rounded-full"
+                  style={{
+                    width: 'calc(100% + 20px)',
+                    height: 'calc(100% + 20px)',
+                    left: '-10px',
+                    top: '-10px',
+                    background: 'radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 60%, transparent 100%)',
+                  }}
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ 
+                    scale: isLogoHovered ? 1.2 : 0.9,
+                    opacity: isLogoHovered ? 1 : 0.6
+                  }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
+                />
+                
+                {/* Dot/Glow effect behind the logo - using white and cyan blend */}
                 <motion.div
                   className="absolute rounded-full"
                   style={{
@@ -162,7 +192,7 @@ export default function Navbar() {
                     height: 'calc(100% + 40px)',
                     left: '-20px',
                     top: '-20px',
-                    background: 'radial-gradient(circle, rgba(0,200,215,0.3) 0%, rgba(67,232,255,0.1) 40%, transparent 70%)',
+                    background: 'radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(0,200,215,0.2) 40%, transparent 70%)',
                     filter: 'blur(20px)',
                   }}
                   initial={{ scale: 0.5, opacity: 0 }}
@@ -173,7 +203,7 @@ export default function Navbar() {
                   transition={{ duration: 0.5, ease: "easeInOut" }}
                 />
                 
-                {/* Particle effects around the logo when hovered */}
+                {/* Particle effects around the logo when hovered - using white for visibility */}
                 <AnimatePresence>
                   {isLogoHovered && (
                     <>
@@ -187,11 +217,12 @@ export default function Navbar() {
                             style={{
                               width: '4px',
                               height: '4px',
-                              background: i % 2 === 0 ? '#00C8D7' : '#43E8FF',
+                              background: i % 2 === 0 ? '#FFFFFF' : '#E0F7FA',
                               left: '50%',
                               top: '50%',
                               marginLeft: '-2px',
                               marginTop: '-2px',
+                              boxShadow: '0 0 6px rgba(255,255,255,0.6)',
                             }}
                             initial={{ 
                               x: 0, 
@@ -235,7 +266,7 @@ export default function Navbar() {
                 >
                   Trustique
                 </motion.h1>
-                <span className="text-[10px] sm:text-xs md:text-sm text-primary font-medium leading-tight flex items-center gap-0.5 sm:gap-1">
+                <span className="text-[10px] sm:text-xs md:text-sm text-white font-medium leading-tight flex items-center gap-0.5 sm:gap-1">
                   <motion.span
                     animate={{ rotate: [0, 10, 0, -10, 0] }}
                     transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -295,7 +326,7 @@ export default function Navbar() {
                   animate={isMobileMenuOpen ? { 
                     y: 8, 
                     rotate: 45,
-                    backgroundColor: '#00C8D7'
+                    backgroundColor: '#FFFFFF'
                   } : { 
                     y: 0, 
                     rotate: 0,
@@ -307,7 +338,7 @@ export default function Navbar() {
                 <motion.span
                   animate={isMobileMenuOpen ? { 
                     opacity: 0,
-                    backgroundColor: '#00C8D7'
+                    backgroundColor: '#FFFFFF'
                   } : { 
                     opacity: 1,
                     backgroundColor: '#F5F7F8'
@@ -319,7 +350,7 @@ export default function Navbar() {
                   animate={isMobileMenuOpen ? { 
                     y: -8, 
                     rotate: -45,
-                    backgroundColor: '#00C8D7'
+                    backgroundColor: '#FFFFFF'
                   } : { 
                     y: 0, 
                     rotate: 0,
@@ -369,15 +400,15 @@ export default function Navbar() {
                     to={link.to}
                     className={`block px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-sm transition-all duration-300 relative overflow-hidden ${
                       isActive(link.to)
-                        ? 'text-primary bg-gradient-to-r from-primary/10 to-primary-gradient/10 border border-primary/20'
-                        : 'text-text-muted hover:text-primary hover:bg-gradient-to-r hover:from-primary/10 hover:to-primary-gradient/10'
+                        ? 'text-white bg-gradient-to-r from-primary/30 to-primary-gradient/30 border border-white/30'
+                        : 'text-text-muted hover:text-white hover:bg-gradient-to-r hover:from-primary/20 hover:to-primary-gradient/20'
                     }`}
                     onClick={handleMobileLinkClick}
                   >
                     {isActive(link.to) && (
                       <motion.div
                         layoutId="mobileActiveNav"
-                        className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-primary-gradient rounded-r-full"
+                        className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-white to-primary-gradient rounded-r-full"
                       />
                     )}
                     {link.label}
@@ -395,19 +426,19 @@ export default function Navbar() {
               >
                 <motion.button
                   onClick={handleMobileServicesToggle}
-                  className="w-full flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-sm transition-all duration-300 text-text-muted hover:text-primary hover:bg-gradient-to-r hover:from-primary/10 hover:to-primary-gradient/10 relative overflow-hidden"
+                  className="w-full flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-sm transition-all duration-300 text-text-muted hover:text-white hover:bg-gradient-to-r hover:from-primary/20 hover:to-primary-gradient/20 relative overflow-hidden"
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                 >
                   <span className="flex items-center gap-2">
-                    <Cpu size={14} className={isMobileServicesOpen ? 'text-primary' : 'text-text-muted'} />
+                    <Cpu size={14} className={isMobileServicesOpen ? 'text-white' : 'text-text-muted'} />
                     Services
                   </span>
                   <motion.div
                     animate={{ rotate: isMobileServicesOpen ? 180 : 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <ChevronDown size={16} className={isMobileServicesOpen ? 'text-primary' : 'text-text-muted'} />
+                    <ChevronDown size={16} className={isMobileServicesOpen ? 'text-white' : 'text-text-muted'} />
                   </motion.div>
                 </motion.button>
 
@@ -434,26 +465,26 @@ export default function Navbar() {
                             >
                               <Link
                                 to={`/services/${service.slug}`}
-                                className="flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 px-2.5 sm:px-3 rounded-xl sm:rounded-2xl text-text-muted hover:text-primary hover:bg-gradient-to-r hover:from-primary/10 hover:to-primary-gradient/10 transition-all duration-300 group border border-transparent hover:border-primary/20"
+                                className="flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 px-2.5 sm:px-3 rounded-xl sm:rounded-2xl text-text-muted hover:text-white hover:bg-gradient-to-r hover:from-primary/20 hover:to-primary-gradient/20 transition-all duration-300 group border border-transparent hover:border-white/20"
                                 onClick={handleMobileLinkClick}
                               >
                                 <div className="flex-shrink-0">
                                   <motion.div 
-                                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl brand-gradient-bg flex items-center justify-center group-hover:scale-110 transition-all duration-300"
+                                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-gradient-to-r from-primary to-primary-gradient flex items-center justify-center group-hover:scale-110 transition-all duration-300"
                                     whileHover={{ rotate: 10 }}
                                   >
                                     <Icon className="text-white" size={14} />
                                   </motion.div>
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <h4 className="font-bold text-text-white text-xs sm:text-sm group-hover:text-primary transition-colors duration-300">
+                                  <h4 className="font-bold text-text-white text-xs sm:text-sm group-hover:text-white transition-colors duration-300">
                                     {service.title}
                                   </h4>
-                                  <p className="text-text-muted text-[10px] sm:text-xs line-clamp-1 mt-0.5">
+                                  <p className="text-text-muted text-[10px] sm:text-xs line-clamp-1 mt-0.5 group-hover:text-white/80 transition-colors duration-300">
                                     {service.description}
                                   </p>
                                 </div>
-                                <ChevronRight size={14} className="text-text-muted group-hover:text-primary transition-colors duration-300" />
+                                <ChevronRight size={14} className="text-text-muted group-hover:text-white transition-colors duration-300" />
                               </Link>
                             </motion.div>
                           );
@@ -472,7 +503,7 @@ export default function Navbar() {
                           onClick={handleMobileLinkClick}
                         >
                           <motion.button
-                            className="w-full brand-gradient-bg text-white py-3 sm:py-3.5 px-5 sm:px-6 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-sm mt-2 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
+                            className="w-full bg-gradient-to-r from-primary to-primary-gradient text-white py-3 sm:py-3.5 px-5 sm:px-6 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-sm mt-2 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
                             whileHover={{ scale: 1.02, y: -1 }}
                             whileTap={{ scale: 0.98 }}
                           >
@@ -503,15 +534,15 @@ export default function Navbar() {
                     to={link.to}
                     className={`block px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-sm transition-all duration-300 relative overflow-hidden ${
                       isActive(link.to)
-                        ? 'text-primary bg-gradient-to-r from-primary/10 to-primary-gradient/10 border border-primary/20'
-                        : 'text-text-muted hover:text-primary hover:bg-gradient-to-r hover:from-primary/10 hover:to-primary-gradient/10'
+                        ? 'text-white bg-gradient-to-r from-primary/30 to-primary-gradient/30 border border-white/30'
+                        : 'text-text-muted hover:text-white hover:bg-gradient-to-r hover:from-primary/20 hover:to-primary-gradient/20'
                     }`}
                     onClick={handleMobileLinkClick}
                   >
                     {isActive(link.to) && (
                       <motion.div
                         layoutId="mobileActiveNav"
-                        className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-primary-gradient rounded-r-full"
+                        className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-white to-primary-gradient rounded-r-full"
                       />
                     )}
                     {link.label}
